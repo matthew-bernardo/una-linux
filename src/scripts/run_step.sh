@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Run a milestone script unless it already succeeded for the current reflog id.
-# While the script is running, an animation occupies the current line. When it
-# finishes, that line is replaced with:
+# While the script is running, a spinner occupies the current line and the
+# latest 10 lines of the script's output sit underneath it (indented, dimmed,
+# redrawn only when that snapshot changes). When it finishes:
 #   ✅  exit 0
 #   ⚠️  exit 3 (warning; still marked complete)
 #   ❌  any other non-zero exit
+# then the last 10 lines of output (omitted when the script printed nothing).
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
@@ -38,9 +40,9 @@ cleanup_run_step() {
 trap cleanup_run_step EXIT
 
 display_name="${milestone//_/ }"
-start_spinner "${display_name}"
-
 step_log="$(mktemp)"
+start_spinner "${display_name}" "${step_log}"
+
 set +e
 "${step_script}" "$@" >"${step_log}" 2>&1
 step_status=$?
@@ -54,9 +56,6 @@ else
   stop_spinner fail
 fi
 
-if [[ -s "${step_log}" ]]; then
-  cat "${step_log}"
-fi
 rm -f "${step_log}"
 step_log=""
 

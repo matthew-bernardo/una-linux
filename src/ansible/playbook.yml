@@ -6,15 +6,41 @@
   vars_files:
     - vars/packages.yml
   tasks:
-    - name: Install Hyprland
+    - name: Ensure DNF COPR plugin is installed
       tags: [hyprland]
-      ansible.builtin.debug:
-        msg: this is where we'd install Hyprland
+      become: true
+      ansible.builtin.dnf:
+        name: dnf5-plugins
+        state: present
+
+    - name: Enable lionheartp/Hyprland COPR
+      tags: [hyprland]
+      become: true
+      ansible.builtin.command:
+        argv:
+          - dnf
+          - copr
+          - enable
+          - -y
+          - lionheartp/Hyprland
+          - "fedora-{{ ansible_facts['distribution_major_version'] }}-{{ ansible_facts['architecture'] }}"
+        creates: "/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:lionheartp:Hyprland.repo"
+
+    - name: Install Hyprland packages
+      tags: [hyprland]
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - hyprland
+          - xdg-desktop-portal-hyprland
+        state: present
+        update_cache: true
 
     - name: Copy Hyprland config
       tags: [hyprland]
-      ansible.builtin.debug:
-        msg: this is where we'd copy configs/hypr to ~/.config/hypr
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/hypr/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/hypr/"
 
     - name: Install zsh and oh-my-zsh
       tags: [shell]
@@ -29,4 +55,4 @@
     - name: Install user packages
       tags: [packages]
       ansible.builtin.debug:
-        msg: this is where we'd install {{ user_packages }}
+        msg: "this is where we'd install {{ user_packages }}"

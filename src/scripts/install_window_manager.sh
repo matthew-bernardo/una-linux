@@ -4,6 +4,7 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 
-echo "this is where we'd install Hyprland"
-echo "this is where we'd copy ${ASAHI_SETUP_ROOT}/configs/hypr to ${HOME}/.config/hypr"
-echo "this is where we'd run: ansible-playbook ${ASAHI_SETUP_ROOT}/ansible/playbook.yml --tags hyprland"
+ansible-playbook \
+  --inventory "${ASAHI_SETUP_ROOT}/ansible/inventory.ini" \
+  "${ASAHI_SETUP_ROOT}/ansible/playbook.yml" \
+  --tags hyprland
