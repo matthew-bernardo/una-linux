@@ -1,0 +1,7 @@
+---
+# Fedora packages installed with dnf. Uncomment entries when the packages
+# milestone is implemented.
+user_packages: []
+#   - git
+#   - neovim
+#   - ripgrep

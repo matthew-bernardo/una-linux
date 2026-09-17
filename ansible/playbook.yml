@@ -1,0 +1,32 @@
+---
+- name: Asahi Linux setup
+  hosts: localhost
+  connection: local
+  become: false
+  vars_files:
+    - vars/packages.yml
+  tasks:
+    - name: Install Hyprland
+      tags: [hyprland]
+      ansible.builtin.debug:
+        msg: this is where we'd install Hyprland
+
+    - name: Copy Hyprland config
+      tags: [hyprland]
+      ansible.builtin.debug:
+        msg: this is where we'd copy configs/hypr to ~/.config/hypr
+
+    - name: Install zsh and oh-my-zsh
+      tags: [shell]
+      ansible.builtin.debug:
+        msg: this is where we'd install zsh and oh-my-zsh
+
+    - name: Copy zshrc
+      tags: [shell]
+      ansible.builtin.debug:
+        msg: this is where we'd copy configs/zsh/zshrc to ~/.zshrc
+
+    - name: Install user packages
+      tags: [packages]
+      ansible.builtin.debug:
+        msg: this is where we'd install {{ user_packages }}
