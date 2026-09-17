@@ -1,0 +1,87 @@
+{
+  "bar.customModules.storage.paths": [
+    "/"
+  ],
+  "theme.font.name": "VCR OSD Mono",
+  "theme.font.label": "VCR OSD Mono",
+  "theme.font.size": "1.0rem",
+  "theme.font.weight": 400,
+  "bar.layouts": {
+    "0": {
+      "left": [
+        "dashboard",
+        "workspaces"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "notifications",
+        "volume",
+        "network",
+        "bluetooth",
+        "clock",
+        "systray"
+      ]
+    },
+    "1": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "clock",
+        "notifications"
+      ]
+    },
+    "2": {
+      "left": [
+        "dashboard",
+        "workspaces",
+        "windowtitle"
+      ],
+      "middle": [
+        "media"
+      ],
+      "right": [
+        "volume",
+        "clock",
+        "notifications"
+      ]
+    }
+  },
+  "theme.bar.transparent": false,
+  "bar.workspaces.show_numbered": true,
+  "bar.workspaces.numbered_active_indicator": "highlight",
+  "theme.bar.buttons.workspaces.numbered_active_highlight_padding": "0.8em",
+  "theme.bar.buttons.workspaces.numbered_active_highlight_border": "0.3em",
+  "theme.bar.menus.menu.dashboard.scaling": 90,
+  "theme.bar.location": "bottom",
+  "bar.autoHide": "never",
+  "theme.bar.menus.border.radius": "0.0em",
+  "theme.bar.buttons.borderSize": "0.1em",
+  "theme.bar.buttons.enableBorders": true,
+  "theme.bar.border.location": "top",
+  "theme.bar.enableShadow": false,
+  "theme.bar.outer_spacing": "1em",
+  "bar.launcher.icon": "\udb82\ude21 Start",
+  "theme.bar.buttons.dashboard.enableBorder": false,
+  "bar.workspaces.show_icons": false,
+  "menus.clock.weather.location": "Munich 80796",
+  "menus.clock.weather.unit": "metric",
+  "menus.clock.weather.key": "8feaa2f92a044efcb60152429251210",
+  "theme.bar.menus.menu.clock.scaling": 80,
+  "theme.bar.menus.menu.notifications.scaling": 100,
+  "theme.bar.buttons.workspaces.pill.width": "12em",
+  "theme.bar.buttons.workspaces.fontSize": "1.2em",
+  "theme.bar.buttons.workspaces.numbered_inactive_padding": "0.8em",
+  "theme.bar.buttons.y_margins": "0.3em",
+  "theme.bar.buttons.padding_y": "0.2rem",
+  "notifications.position": "bottom right",
+  "theme.bar.menus.menu.notifications.height": "60em"
+}
