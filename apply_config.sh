@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS="${ROOT}/scripts"
+SCRIPTS="${ROOT}/src/scripts"
 
 "${SCRIPTS}/print_una_header.sh"
 echo "una: applying config from ${ROOT}"

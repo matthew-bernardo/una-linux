@@ -1,0 +1,9 @@
+NAME="Fedora Linux Asahi Remix"
+VERSION="44"
+ID=fedora-asahi-remix
+ID_LIKE=fedora
+VERSION_ID=44
+PRETTY_NAME="Fedora Linux Asahi Remix 44 (test stand-in)"
+VARIANT="KDE Plasma"
+VARIANT_ID=kde
+HOME_URL="https://fedora-asahi-remix.org/"
