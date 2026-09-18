@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ALIASES_FILE=~/setup/aliases.sh
-FUNCTIONS_FILE=~/setup/functions.sh
+ALIASES_FILE=~.unaaliases.sh
+FUNCTIONS_FILE=~.unafunctions.sh
 
 # Source the files so aliases and functions are available
 source "$ALIASES_FILE"

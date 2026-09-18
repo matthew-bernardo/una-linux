@@ -16,11 +16,12 @@ That script currently has these install milestones:
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
 4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`)
-5. Install zsh / oh-my-zsh, set `~/.zshrc`, and install `run_aliases.sh`
-6. Install and enable ClamAV (daemon + signature updater)
-7. Install user packages listed in `ansible/vars/packages.yml`
+5. Install HyprPanel from [source](https://github.com/Jas-SinghFSU/HyprPanel) into `~.unaHyprPanel` and copy themes to `~/.config/hyprpanel/themes`
+6. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/setup`, and install `run_aliases.sh`
+7. Install and enable ClamAV (daemon + signature updater)
+8. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
 
-Hyprland, the shell, and ClamAV are implemented in Ansible (`ansible/playbook.yml`). The user-packages step is still a stub.
+Hyprland, HyprPanel, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
 Privileged milestones prompt for sudo on the terminal *before* the spinner starts, then keep a cached ticket so Ansible `become` can run `sudo -n`. That also writes `Defaults timestamp_type=global` to `/etc/sudoers.d/una-setup` so the ticket works without a tty.
 
@@ -72,6 +73,7 @@ scripts/
   run_step.sh
   install_ansible.sh
   install_window_manager.sh
+  install_hyprpanel.sh
   install_shell.sh
   install_clamav.sh
   check_disk_encryption.sh
@@ -80,4 +82,6 @@ scripts/
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
 configs/zsh/zshrc               # zshrc to copy
+configs/zsh/aliases.sh          # copied to ~.unaaliases.sh
+configs/zsh/functions.sh        # copied to ~.unafunctions.sh
 ```

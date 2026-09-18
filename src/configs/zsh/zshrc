@@ -2,3 +2,16 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(git)
 source "$ZSH/oh-my-zsh.sh"
+
+[[ -f "$HOME.unaaliases.sh" ]] && source "$HOME.unaaliases.sh" >/dev/null
+[[ -f "$HOME.unafunctions.sh" ]] && source "$HOME.unafunctions.sh" >/dev/null
+
+if [[ -d "$HOME/AppImages" && ":$PATH:" != *":$HOME/AppImages:"* ]]; then
+  export PATH="$HOME/AppImages:$PATH"
+fi
+export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="$HOME/.deno/bin:$PATH"
+
+export EDITOR="vim"
+
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

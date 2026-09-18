@@ -17,8 +17,9 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 
 "${SCRIPTS}/run_step.sh" --sudo install_ansible "${SCRIPTS}/install_ansible.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_window_manager "${SCRIPTS}/install_window_manager.sh"
+"${SCRIPTS}/run_step.sh" --sudo install_hyprpanel "${SCRIPTS}/install_hyprpanel.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_shell "${SCRIPTS}/install_shell.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_clamav "${SCRIPTS}/install_clamav.sh"
-"${SCRIPTS}/run_step.sh" install_packages "${SCRIPTS}/install_packages.sh"
+"${SCRIPTS}/run_step.sh" --sudo install_packages "${SCRIPTS}/install_packages.sh"
 
 echo "una: done"

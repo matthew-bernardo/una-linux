@@ -73,6 +73,54 @@
         path: "{{ ansible_facts['user_dir'] }}/.config/hypr/hyprland.conf"
         state: absent
 
+    - name: Install HyprPanel packages
+      tags: [hyprpanel]
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - git
+          - meson
+          - ninja-build
+          - gcc
+          - gcc-c++
+          - gjs
+          - gtk3
+          - gtk-layer-shell
+          - aylurs-gtk-shell
+          - libgtop2
+          - NetworkManager
+          - wl-clipboard
+          - upower
+          - gvfs
+          - gtksourceview3
+          - libsoup3
+          - nodejs
+          - fontconfig
+          - bluez
+          - bluez-tools
+          - gnome-bluetooth
+          - power-profiles-daemon
+          - btop
+          - hyprpicker
+          - wf-recorder
+          - grim
+          - slurp
+        state: present
+        update_cache: true
+
+    - name: Ensure HyprPanel config directory exists
+      tags: [hyprpanel]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/hyprpanel/themes"
+        state: directory
+        mode: "0755"
+
+    - name: Copy HyprPanel themes
+      tags: [hyprpanel]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../themes/hyprpanel/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/hyprpanel/themes/"
+
     - name: Install zsh and git
       tags: [shell]
       become: true
@@ -103,6 +151,25 @@
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/zsh/zshrc"
         dest: "{{ ansible_facts['user_dir'] }}/.zshrc"
+
+    - name: Ensure setup directory exists
+      tags: [shell]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/setup"
+        state: directory
+        mode: "0755"
+
+    - name: Copy aliases.sh
+      tags: [shell]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/zsh/aliases.sh"
+        dest: "{{ ansible_facts['user_dir'] }}/setup/aliases.sh"
+
+    - name: Copy functions.sh
+      tags: [shell]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/zsh/functions.sh"
+        dest: "{{ ansible_facts['user_dir'] }}/setup/functions.sh"
 
     - name: Ensure una bin directory exists
       tags: [shell]
@@ -199,5 +266,8 @@
 
     - name: Install user packages
       tags: [packages]
-      ansible.builtin.debug:
-        msg: "this is where we'd install {{ user_packages }}"
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ user_packages }}"
+        state: present
+      when: user_packages | length > 0

@@ -5,7 +5,10 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 
-THEMES_DIR="${ASAHI_SETUP_ROOT}/themes/hyprpanel"
+THEMES_DIR="${HOME}/.config/hyprpanel/themes"
+if [[ ! -d "${THEMES_DIR}" ]]; then
+  THEMES_DIR="${ASAHI_SETUP_ROOT}/themes/hyprpanel"
+fi
 HYPRPANEL_DIR="${HOME}/.config/hyprpanel"
 LIVE_CONFIG="${HYPRPANEL_DIR}/config.json"
 LIVE_MODULES="${HYPRPANEL_DIR}/modules.scss"

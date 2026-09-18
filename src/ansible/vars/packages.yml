@@ -1,7 +1,5 @@
 ---
-# Fedora packages installed with dnf. Uncomment entries when the packages
-# milestone is implemented.
-user_packages: []
-#   - git
-#   - neovim
-#   - ripgrep
+# Fedora packages unrelated to Hyprland, installed with dnf.
+user_packages:
+  - vim-enhanced
+  - neovim
