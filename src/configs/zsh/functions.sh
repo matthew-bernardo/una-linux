@@ -14,6 +14,14 @@ gpo() {
     git push --set-upstream origin $(git branch --show-current)
 }
 
+install_cursor() {
+  curl -L \
+  "$(curl -s 'https://api2.cursor.sh/updates/api/download/stable/linux-arm64/cursor' | jq -r '.downloadUrl')" \
+  -o ~/.local/bin/cursor
+
+  chmod +x ~/.local/bin/cursor
+}
+
 # Uses Wofi to prompt the user to pick a repo
 ide() {
   set -o pipefail

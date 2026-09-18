@@ -3,3 +3,8 @@
 user_packages:
   - vim-enhanced
   - neovim
+  - jq
+  - wl-clipboard
+  - grim
+  - slurp
+  - notify-send
