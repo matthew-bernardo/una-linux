@@ -140,10 +140,7 @@ if in_container; then
 fi
 
 require_tty
-require_root "$@"
-require_cmd cryptsetup
 require_cmd lsblk
-require_cmd mktemp
 
 say "LUKS mapper setup"
 say "This opens an existing LUKS partition and adds it to ${CRYPTTAB} with discard."
@@ -152,7 +149,9 @@ say ""
 
 mapfile -t luks_rows < <(list_luks_devices)
 if [[ "${#luks_rows[@]}" -eq 0 ]]; then
-  die "no LUKS volumes found. Encrypt the Asahi root partition from a USB rescue system first (see README)."
+  say "No LUKS volumes found. Skipping mapper setup."
+  say "The encryption check will ask whether to quit or continue."
+  exit 0
 fi
 
 say "LUKS devices:"
@@ -164,10 +163,18 @@ for row in "${luks_rows[@]}"; do
 done
 say ""
 
-choice="$(ask "Select a device [1]: ")"
+choice="$(ask "Select a device [1], or s to skip: ")"
+if [[ "${choice}" == [sS] || "${choice}" == skip || "${choice}" == Skip ]]; then
+  say "Skipping LUKS mapper setup."
+  exit 0
+fi
 [[ -z "${choice}" ]] && choice=1
 [[ "${choice}" =~ ^[0-9]+$ ]] || die "not a number"
 [[ "${choice}" -ge 1 && "${choice}" -le "${#luks_rows[@]}" ]] || die "selection out of range"
+
+require_root "$@"
+require_cmd cryptsetup
+require_cmd mktemp
 
 IFS=$'\t' read -r selected_dev _selected_fstype _selected_type _ _ <<<"${luks_rows[$((choice - 1))]}"
 
@@ -199,7 +206,10 @@ say "  partition: ${luks_dev}"
 say "  mapper:    /dev/mapper/${mapper_name}"
 say "  crypttab:  ${mapper_name} UUID=${uuid} none discard"
 say ""
-confirm "Write this mapper into ${CRYPTTAB}?" || die "aborted"
+confirm "Write this mapper into ${CRYPTTAB}?" || {
+  say "Skipping crypttab update."
+  exit 0
+}
 
 if [[ -e "/dev/mapper/${mapper_name}" ]]; then
   say "Mapper /dev/mapper/${mapper_name} is already active."

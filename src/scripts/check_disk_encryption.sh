@@ -53,6 +53,33 @@ See the "Disk encryption" section in README.md, and:
 EOF
 }
 
+prompt_quit_or_continue() {
+  local tty="/dev/tty" reply
+  if [[ ! -r "${tty}" || ! -w "${tty}" ]]; then
+    echo "error: no TTY to ask whether to skip encryption" >&2
+    return 1
+  fi
+  printf '%s\n' "" >"${tty}"
+  printf '%s\n' "No LUKS encryption on the required mounts. Sprinto disk-encryption checks will fail." >"${tty}"
+  printf '%s\n' "  q — quit apply now" >"${tty}"
+  printf '%s\n' "  c — continue without encryption" >"${tty}"
+  while true; do
+    printf '%s' "Quit or continue? [q/c] " >"${tty}"
+    read -r reply <"${tty}"
+    case "${reply}" in
+      q | Q | quit | Quit)
+        echo "user chose to quit because encryption is missing" >&2
+        return 1
+        ;;
+      c | C | continue | Continue)
+        echo "user chose to continue without encryption" >&2
+        return 0
+        ;;
+    esac
+    printf '%s\n' "Please enter q or c." >"${tty}"
+  done
+}
+
 check_mount() {
   local mountpoint="$1"
   local src
@@ -103,6 +130,11 @@ encryption_help
 
 if in_container; then
   echo "warning: skipping LUKS requirement in this container (no real disk)" >&2
+  exit 3
+fi
+
+if prompt_quit_or_continue; then
+  echo "warning: continuing without LUKS encryption" >&2
   exit 3
 fi
 

@@ -23,7 +23,7 @@ Hyprland, the shell, and ClamAV are implemented in Ansible (`ansible/playbook.ym
 
 ## Disk encryption
 
-The current NixOS install uses **LUKS** on the root partition (`cryptroot`), with `/` and `/home` on that unlocked volume. New Asahi machines must match that: `check_disk_encryption` fails unless those mounts are LUKS-backed.
+The current NixOS install uses **LUKS** on the root partition (`cryptroot`), with `/` and `/home` on that unlocked volume. New Asahi machines should match that. If `/` (and a separate `/home`) is not LUKS-backed, `check_disk_encryption` asks whether to **quit** or **continue** without encryption (Sprinto disk-encryption checks will fail if you continue).
 
 The Fedora Asahi installer still does not offer encryption. After a normal
 install, encrypt the Asahi root partition in place with LUKS2 from a USB
