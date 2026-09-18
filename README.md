@@ -15,7 +15,7 @@ That script currently has these install milestones:
 1. Confirm this is Fedora Asahi Remix
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
-4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr`
+4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`)
 5. Install zsh / oh-my-zsh, set `~/.zshrc`, and install `run_aliases.sh`
 6. Install and enable ClamAV (daemon + signature updater)
 7. Install user packages listed in `ansible/vars/packages.yml`

@@ -67,6 +67,12 @@
         src: "{{ playbook_dir }}/../configs/hypr/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/hypr/"
 
+    - name: Remove deprecated hyprland.conf
+      tags: [hyprland]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/hypr/hyprland.conf"
+        state: absent
+
     - name: Install zsh and git
       tags: [shell]
       become: true
