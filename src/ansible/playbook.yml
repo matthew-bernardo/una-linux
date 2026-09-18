@@ -137,6 +137,27 @@
         src: "{{ playbook_dir }}/../themes/hyprpanel/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/hyprpanel/themes/"
 
+    - name: Ensure user fonts directory exists
+      tags: [fonts]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.local/share/fonts/una"
+        state: directory
+        mode: "0755"
+
+    - name: Copy theme fonts
+      tags: [fonts]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../themes/fonts/"
+        dest: "{{ ansible_facts['user_dir'] }}/.local/share/fonts/una/"
+
+    - name: Refresh font cache
+      tags: [fonts]
+      ansible.builtin.command:
+        argv:
+          - fc-cache
+          - -f
+          - "{{ ansible_facts['user_dir'] }}/.local/share/fonts/una"
+
     - name: Install zsh and git
       tags: [shell]
       become: true

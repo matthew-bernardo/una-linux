@@ -16,10 +16,11 @@ That script currently has these install milestones:
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
 4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`)
-5. Install HyprPanel from [source](https://github.com/Jas-SinghFSU/HyprPanel) into `~/.una/HyprPanel` and copy themes to `~/.config/hyprpanel/themes`
-6. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
-7. Install and enable ClamAV (daemon + signature updater)
-8. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
+5. Install theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
+6. Install HyprPanel from [source](https://github.com/Jas-SinghFSU/HyprPanel) into `~/.una/HyprPanel` and copy themes to `~/.config/hyprpanel/themes`
+7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
+8. Install and enable ClamAV (daemon + signature updater)
+9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
 
 Hyprland, HyprPanel, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
@@ -73,6 +74,7 @@ scripts/
   run_step.sh
   install_ansible.sh
   install_window_manager.sh
+  install_fonts.sh
   install_hyprpanel.sh
   install_shell.sh
   install_clamav.sh
@@ -84,4 +86,5 @@ configs/hypr/                   # Hyprland config to copy
 configs/zsh/zshrc               # zshrc to copy
 configs/zsh/aliases.sh          # copied to ~/.una/aliases.sh
 configs/zsh/functions.sh        # copied to ~/.una/functions.sh
+themes/fonts/                   # copied to ~/.local/share/fonts/una
 ```
