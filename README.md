@@ -25,9 +25,14 @@ Hyprland, the shell, and ClamAV are implemented in Ansible (`ansible/playbook.ym
 
 The current NixOS install uses **LUKS** on the root partition (`cryptroot`), with `/` and `/home` on that unlocked volume. New Asahi machines must match that: `check_disk_encryption` fails unless those mounts are LUKS-backed.
 
-The Fedora Asahi installer still does not offer encryption. After a normal install, encrypt the Asahi root partition in place with LUKS2 from a USB rescue system, then add `rd.luks.uuid=` to GRUB and rebuild the initramfs. `/boot` stays unencrypted, same as now.
+The Fedora Asahi installer still does not offer encryption. After a normal
+install, encrypt the Asahi root partition in place with LUKS2 from a USB
+rescue system. Then `setup_disk_encryption.sh` opens that volume as a device
+mapper and writes `/etc/crypttab` with `discard` so Fedora’s `fstrim.timer`
+can TRIM. `/boot` stays unencrypted, same as now.
 
-Do not run `cryptsetup reencrypt` from the live Asahi root. Use a USB rescue boot. Current walkthroughs:
+Do not run `cryptsetup reencrypt` from the live Asahi root. Use a USB rescue
+boot. Initramfs/GRUB (`rd.luks.uuid`) is not handled yet. Current walkthroughs:
 
 - https://blog.fluxcoil.net/2026/05/fedora-asahi-remix-with-LUKS-encryption-in-2026/
 - https://davidalger.com/posts/fedora-asahi-remix-on-apple-silicon-with-luks-encryption/
@@ -66,6 +71,7 @@ scripts/
   install_shell.sh
   install_clamav.sh
   check_disk_encryption.sh
+  setup_disk_encryption.sh
   install_packages.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
