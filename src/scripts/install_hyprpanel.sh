@@ -31,9 +31,10 @@ clone_if_missing() {
 meson_install() {
   local src="$1"
   local build="${src}/build"
-  if [[ ! -f "${build}/build.ninja" ]]; then
-    meson setup --prefix="${MESON_PREFIX}" "${build}" "${src}"
+  if [[ -f "${build}/build.ninja" ]]; then
+    return 0
   fi
+  meson setup --prefix="${MESON_PREFIX}" "${build}" "${src}"
   meson compile -C "${build}"
   sudo meson install -C "${build}"
 }
@@ -42,21 +43,23 @@ if ! command -v sass >/dev/null 2>&1; then
   sudo npm install -g sass
 fi
 
-# AGS / Astal are not in lionheartp/Hyprland. HyprPanel's meson needs `ags`.
-if ! command -v ags >/dev/null 2>&1; then
-  clone_if_missing "https://github.com/aylur/astal.git" "${ASTAL_SRC}"
-  clone_if_missing "https://github.com/rilian-la-te/vala-panel-appmenu.git" "${APPMENU_SRC}"
-  meson_install "${ASTAL_SRC}/lib/astal/io"
-  meson_install "${ASTAL_SRC}/lib/astal/gtk3"
-  meson_install "${ASTAL_SRC}/lib/astal/gtk4"
-  meson_install "${ASTAL_SRC}/lang/gjs"
-  # notifd/mpris CLIs need libquarrel; tray needs appmenu-glib-translator.
-  meson_install "${ASTAL_SRC}/lib/quarrel"
-  meson_install "${APPMENU_SRC}/subprojects/appmenu-glib-translator"
-  for lib in hyprland battery network bluetooth notifd tray mpris apps wireplumber powerprofiles; do
-    meson_install "${ASTAL_SRC}/lib/${lib}"
-  done
+# AGS / Astal are not in lionheartp/Hyprland. HyprPanel needs their typelibs
+# (including AstalCava) even if `ags` is already on PATH from a previous run.
+clone_if_missing "https://github.com/aylur/astal.git" "${ASTAL_SRC}"
+clone_if_missing "https://github.com/rilian-la-te/vala-panel-appmenu.git" "${APPMENU_SRC}"
+meson_install "${ASTAL_SRC}/lib/astal/io"
+meson_install "${ASTAL_SRC}/lib/astal/gtk3"
+meson_install "${ASTAL_SRC}/lib/astal/gtk4"
+meson_install "${ASTAL_SRC}/lang/gjs"
+# notifd/mpris CLIs need libquarrel; tray needs appmenu-glib-translator.
+meson_install "${ASTAL_SRC}/lib/quarrel"
+meson_install "${APPMENU_SRC}/subprojects/appmenu-glib-translator"
+# cava pulls libcava via meson wrap (LukashonakV/cava).
+for lib in hyprland battery network bluetooth notifd tray mpris apps wireplumber powerprofiles cava; do
+  meson_install "${ASTAL_SRC}/lib/${lib}"
+done
 
+if ! command -v ags >/dev/null 2>&1; then
   clone_if_missing "https://github.com/aylur/ags.git" "${AGS_SRC}"
   if [[ ! -d "${AGS_SRC}/node_modules" ]]; then
     npm install --prefix "${AGS_SRC}"

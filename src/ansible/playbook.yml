@@ -131,6 +131,12 @@
           - wf-recorder
           - grim
           - slurp
+          - alsa-lib-devel
+          - fftw3-devel
+          - pulseaudio-libs-devel
+          - pipewire-devel
+          - iniparser-devel
+          - libtool
         state: present
         update_cache: true
 
