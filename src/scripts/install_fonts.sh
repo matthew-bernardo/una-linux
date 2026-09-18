@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install theme fonts from src/themes/fonts into ~/.local/share/fonts/una.
+# Install Noto Color Emoji and copy theme fonts into ~/.local/share/fonts/una.
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"

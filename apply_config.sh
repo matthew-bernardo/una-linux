@@ -16,7 +16,7 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" check_disk_encryption "${SCRIPTS}/check_disk_encryption.sh"
 
 "${SCRIPTS}/run_step.sh" --sudo install_ansible "${SCRIPTS}/install_ansible.sh"
-"${SCRIPTS}/run_step.sh" install_fonts "${SCRIPTS}/install_fonts.sh"
+"${SCRIPTS}/run_step.sh" --sudo install_fonts "${SCRIPTS}/install_fonts.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_shell "${SCRIPTS}/install_shell.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_window_manager "${SCRIPTS}/install_window_manager.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_hyprpanel "${SCRIPTS}/install_hyprpanel.sh"

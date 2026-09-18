@@ -16,7 +16,7 @@ That script currently has these install milestones:
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
 4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` (tokyo-night / tokyo-light themes).
-5. Install theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
+5. Install Noto Color Emoji and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
 6. Install HyprPanel from [source](https://github.com/Jas-SinghFSU/HyprPanel) into `~/.una/HyprPanel` and copy themes to `~/.config/hyprpanel/themes`
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
