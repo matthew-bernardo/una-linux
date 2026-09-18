@@ -15,6 +15,7 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/setup_disk_encryption.sh"
 "${SCRIPTS}/run_step.sh" check_disk_encryption "${SCRIPTS}/check_disk_encryption.sh"
 
+"${SCRIPTS}/run_step.sh" install_ansible "${SCRIPTS}/install_ansible.sh"
 "${SCRIPTS}/run_step.sh" install_window_manager "${SCRIPTS}/install_window_manager.sh"
 "${SCRIPTS}/run_step.sh" install_shell "${SCRIPTS}/install_shell.sh"
 "${SCRIPTS}/run_step.sh" install_clamav "${SCRIPTS}/install_clamav.sh"
