@@ -85,16 +85,32 @@
           - gcc-c++
           - gjs
           - gtk3
+          - gtk3-devel
           - gtk-layer-shell
-          - aylurs-gtk-shell
+          - gtk-layer-shell-devel
+          - gtk4-devel
+          - gtk4-layer-shell
+          - gtk4-layer-shell-devel
           - libgtop2
+          - libgtop2-devel
           - NetworkManager
+          - NetworkManager-libnm-devel
           - wl-clipboard
           - upower
           - gvfs
           - gtksourceview3
           - libsoup3
           - nodejs
+          - npm
+          - golang
+          - vala
+          - pkgconf
+          - gobject-introspection-devel
+          - gjs-devel
+          - json-glib-devel
+          - wireplumber-devel
+          - libdbusmenu-gtk3-devel
+          - gnome-bluetooth-libs-devel
           - fontconfig
           - bluez
           - bluez-tools
@@ -152,10 +168,10 @@
         src: "{{ playbook_dir }}/../configs/zsh/zshrc"
         dest: "{{ ansible_facts['user_dir'] }}/.zshrc"
 
-    - name: Ensure setup directory exists
+    - name: Ensure ~/.una directory exists
       tags: [shell]
       ansible.builtin.file:
-        path: "{{ ansible_facts['user_dir'] }}/setup"
+        path: "{{ ansible_facts['user_dir'] }}/.una"
         state: directory
         mode: "0755"
 
@@ -163,13 +179,13 @@
       tags: [shell]
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/zsh/aliases.sh"
-        dest: "{{ ansible_facts['user_dir'] }}/setup/aliases.sh"
+        dest: "{{ ansible_facts['user_dir'] }}/.una/aliases.sh"
 
     - name: Copy functions.sh
       tags: [shell]
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/zsh/functions.sh"
-        dest: "{{ ansible_facts['user_dir'] }}/setup/functions.sh"
+        dest: "{{ ansible_facts['user_dir'] }}/.una/functions.sh"
 
     - name: Ensure una bin directory exists
       tags: [shell]

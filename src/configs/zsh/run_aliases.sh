@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ALIASES_FILE=~.unaaliases.sh
-FUNCTIONS_FILE=~.unafunctions.sh
+ALIASES_FILE="${HOME}/.una/aliases.sh"
+FUNCTIONS_FILE="${HOME}/.una/functions.sh"
 
 # Source the files so aliases and functions are available
 source "$ALIASES_FILE"

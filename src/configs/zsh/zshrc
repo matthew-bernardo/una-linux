@@ -3,8 +3,8 @@ ZSH_THEME="robbyrussell"
 plugins=(git)
 source "$ZSH/oh-my-zsh.sh"
 
-[[ -f "$HOME.unaaliases.sh" ]] && source "$HOME.unaaliases.sh" >/dev/null
-[[ -f "$HOME.unafunctions.sh" ]] && source "$HOME.unafunctions.sh" >/dev/null
+[[ -f "$HOME/.una/aliases.sh" ]] && source "$HOME/.una/aliases.sh" >/dev/null
+[[ -f "$HOME/.una/functions.sh" ]] && source "$HOME/.una/functions.sh" >/dev/null
 
 if [[ -d "$HOME/AppImages" && ":$PATH:" != *":$HOME/AppImages:"* ]]; then
   export PATH="$HOME/AppImages:$PATH"
