@@ -104,8 +104,10 @@
           - npm
           - golang
           - vala
+          - valadoc
           - pkgconf
           - gobject-introspection-devel
+          - wayland-protocols-devel
           - gjs-devel
           - json-glib-devel
           - wireplumber-devel
