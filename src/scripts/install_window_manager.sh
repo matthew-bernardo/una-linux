@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install Hyprland and copy this repo's Hyprland config into ~/.config/hypr.
+# Install Hyprland and the tools its config uses, then copy configs/hypr into ~/.config/hypr.
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"

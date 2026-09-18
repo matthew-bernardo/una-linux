@@ -10,13 +10,29 @@ Run everything from a single entry point:
 ./apply_config.sh
 ```
 
-That script currently has three install milestones:
+That script currently has these install milestones:
 
-1. Install Hyprland and copy `configs/hypr` to `~/.config/hypr`
-2. Install zsh / oh-my-zsh and set `~/.zshrc`
-3. Install user packages listed in `ansible/vars/packages.yml`
+1. Confirm this is Fedora Asahi Remix
+2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
+3. Install Hyprland and copy `configs/hypr` to `~/.config/hypr`
+4. Install zsh / oh-my-zsh, set `~/.zshrc`, and install `run_aliases.sh`
+5. Install and enable ClamAV (daemon + signature updater)
+6. Install user packages listed in `ansible/vars/packages.yml`
 
-All three will live in Ansible (`ansible/playbook.yml`). The installer scripts are stubs for now.
+Hyprland, the shell, and ClamAV are implemented in Ansible (`ansible/playbook.yml`). The user-packages step is still a stub.
+
+## Disk encryption
+
+The current NixOS install uses **LUKS** on the root partition (`cryptroot`), with `/` and `/home` on that unlocked volume. New Asahi machines must match that: `check_disk_encryption` fails unless those mounts are LUKS-backed.
+
+The Fedora Asahi installer still does not offer encryption. After a normal install, encrypt the Asahi root partition in place with LUKS2 from a USB rescue system, then add `rd.luks.uuid=` to GRUB and rebuild the initramfs. `/boot` stays unencrypted, same as now.
+
+Do not run `cryptsetup reencrypt` from the live Asahi root. Use a USB rescue boot. Current walkthroughs:
+
+- https://blog.fluxcoil.net/2026/05/fedora-asahi-remix-with-LUKS-encryption-in-2026/
+- https://davidalger.com/posts/fedora-asahi-remix-on-apple-silicon-with-luks-encryption/
+
+In the test container there is no real disk, so that check warns and continues.
 
 ## Re-runs
 
@@ -48,6 +64,8 @@ scripts/
   run_step.sh
   install_window_manager.sh
   install_shell.sh
+  install_clamav.sh
+  check_disk_encryption.sh
   install_packages.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy

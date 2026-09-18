@@ -15,7 +15,9 @@ Mac would.
 ## What this is for
 
 - Exercising the installer: milestones, skip logic, spinner, Ansible tags
-- Installing Hyprland / zsh / user packages from Fedora aarch64 + COPRs
+- Installing Hyprland / zsh / ClamAV / user packages from Fedora aarch64 + COPRs
+
+The LUKS disk-encryption check **warns** here (exit 3) instead of failing: the guest has no real encrypted disk. On a Mac it is a hard requirement.
 
 Success here means the **setup tool** ran and packages installed for
 `aarch64`. It does not mean Hyprland would start on a Mac.
