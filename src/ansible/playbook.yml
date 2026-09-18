@@ -100,6 +100,8 @@
           - gvfs
           - gtksourceview3
           - libsoup3
+          - libsoup3-devel
+          - gdk-pixbuf2-devel
           - nodejs
           - npm
           - golang

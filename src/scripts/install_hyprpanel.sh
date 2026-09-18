@@ -11,6 +11,7 @@ HYPRPANEL_REPO="https://github.com/Jas-SinghFSU/HyprPanel.git"
 HYPRPANEL_SRC="${HOME}/.una/HyprPanel"
 ASTAL_SRC="${HOME}/.una/astal"
 AGS_SRC="${HOME}/.una/ags"
+APPMENU_SRC="${HOME}/.una/vala-panel-appmenu"
 MESON_PREFIX="/usr"
 
 ansible-playbook \
@@ -44,10 +45,14 @@ fi
 # AGS / Astal are not in lionheartp/Hyprland. HyprPanel's meson needs `ags`.
 if ! command -v ags >/dev/null 2>&1; then
   clone_if_missing "https://github.com/aylur/astal.git" "${ASTAL_SRC}"
+  clone_if_missing "https://github.com/rilian-la-te/vala-panel-appmenu.git" "${APPMENU_SRC}"
   meson_install "${ASTAL_SRC}/lib/astal/io"
   meson_install "${ASTAL_SRC}/lib/astal/gtk3"
   meson_install "${ASTAL_SRC}/lib/astal/gtk4"
   meson_install "${ASTAL_SRC}/lang/gjs"
+  # notifd/mpris CLIs need libquarrel; tray needs appmenu-glib-translator.
+  meson_install "${ASTAL_SRC}/lib/quarrel"
+  meson_install "${APPMENU_SRC}/subprojects/appmenu-glib-translator"
   for lib in hyprland battery network bluetooth notifd tray mpris apps wireplumber powerprofiles; do
     meson_install "${ASTAL_SRC}/lib/${lib}"
   done
