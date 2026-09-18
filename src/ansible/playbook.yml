@@ -26,6 +26,19 @@
           - "fedora-{{ ansible_facts['distribution_major_version'] }}-{{ ansible_facts['architecture'] }}"
         creates: "/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:lionheartp:Hyprland.repo"
 
+    - name: Enable lihaohong/yazi COPR
+      tags: [hyprland]
+      become: true
+      ansible.builtin.command:
+        argv:
+          - dnf
+          - copr
+          - enable
+          - -y
+          - lihaohong/yazi
+          - "fedora-{{ ansible_facts['distribution_major_version'] }}-{{ ansible_facts['architecture'] }}"
+        creates: "/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:lihaohong:yazi.repo"
+
     - name: Install Hyprland packages
       tags: [hyprland]
       become: true
