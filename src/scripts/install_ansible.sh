@@ -9,14 +9,14 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   exit 0
 fi
 
-if [[ "${EUID}" -ne 0 ]]; then
-  exec sudo -- "$0" "$@"
-fi
-
 command -v dnf >/dev/null 2>&1 || {
   echo "error: dnf is required to install ansible-core" >&2
   exit 1
 }
 
-dnf install -y ansible-core
+if [[ "${EUID}" -eq 0 ]]; then
+  dnf install -y ansible-core
+else
+  sudo dnf install -y ansible-core
+fi
 command -v ansible-playbook >/dev/null 2>&1

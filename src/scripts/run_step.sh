@@ -12,8 +12,14 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 source "${_ASAHI_SETUP_SCRIPTS_DIR}/_spinner.sh"
 
+needs_sudo=0
+if [[ "${1:-}" == --sudo ]]; then
+  needs_sudo=1
+  shift
+fi
+
 if [[ $# -lt 2 ]]; then
-  echo "usage: $0 MILESTONE SCRIPT [ARGS...]" >&2
+  echo "usage: $0 [--sudo] MILESTONE SCRIPT [ARGS...]" >&2
   exit 2
 fi
 
@@ -26,8 +32,28 @@ if ! "${_ASAHI_SETUP_SCRIPTS_DIR}/check_if_should_run_step.sh" "${milestone}"; t
   exit 0
 fi
 
+_SUDO_KEEPALIVE_PID=""
+stop_sudo_keepalive() {
+  if [[ -n "${_SUDO_KEEPALIVE_PID}" ]]; then
+    kill "${_SUDO_KEEPALIVE_PID}" 2>/dev/null || true
+    wait "${_SUDO_KEEPALIVE_PID}" 2>/dev/null || true
+    _SUDO_KEEPALIVE_PID=""
+  fi
+}
+
+start_sudo_keepalive() {
+  (
+    while true; do
+      sleep 50
+      sudo -n true || exit
+    done
+  ) >/dev/null 2>&1 &
+  _SUDO_KEEPALIVE_PID=$!
+}
+
 step_log=""
 cleanup_run_step() {
+  stop_sudo_keepalive
   if [[ -n "${_SPINNER_PID}" ]]; then
     stop_spinner fail
   else
@@ -38,6 +64,11 @@ cleanup_run_step() {
   fi
 }
 trap cleanup_run_step EXIT
+
+if [[ "${needs_sudo}" -eq 1 ]]; then
+  "${_ASAHI_SETUP_SCRIPTS_DIR}/ensure_sudo.sh"
+  start_sudo_keepalive
+fi
 
 display_name="${milestone//_/ }"
 step_log="$(mktemp)"

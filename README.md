@@ -22,6 +22,8 @@ That script currently has these install milestones:
 
 Hyprland, the shell, and ClamAV are implemented in Ansible (`ansible/playbook.yml`). The user-packages step is still a stub.
 
+Privileged milestones prompt for sudo on the terminal *before* the spinner starts, then keep a cached ticket so Ansible `become` can run `sudo -n`. That also writes `Defaults timestamp_type=global` to `/etc/sudoers.d/una-setup` so the ticket works without a tty.
+
 ## Disk encryption
 
 The current NixOS install uses **LUKS** on the root partition (`cryptroot`), with `/` and `/home` on that unlocked volume. New Asahi machines should match that. If `/` (and a separate `/home`) is not LUKS-backed, `check_disk_encryption` asks whether to **quit** or **continue** without encryption (Sprinto disk-encryption checks will fail if you continue).
