@@ -67,6 +67,12 @@
         src: "{{ playbook_dir }}/../configs/hypr/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/hypr/"
 
+    - name: Copy kitty config and themes
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/kitty/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/kitty/"
+
     - name: Remove deprecated hyprland.conf
       tags: [hyprland]
       ansible.builtin.file:
