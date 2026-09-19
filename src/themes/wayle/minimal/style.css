@@ -94,26 +94,24 @@ menubutton.bar-button .icon-container image {
   color: #000000;
 }
 
-.custom.rec-active menubutton.bar-button {
-  --bar-btn-bg: #e03131;
-  --bar-btn-icon-bg: #e03131;
-  --bar-btn-label-color: #ffffff;
-  --bar-btn-icon-color: #ffffff;
+/* .custom.rec-active menubutton.bar-button {
+  --bar-btn-label-color: #e03131;
+  --bar-btn-icon-color: #e03131;
 }
 
 .custom.rec-active menubutton.bar-button > button.toggle,
 .custom.rec-active menubutton.bar-button:hover > button.toggle {
-  background-color: #e03131;
+  color: #e03131;
   filter: none;
 }
 
 .custom.rec-active menubutton.bar-button .icon-container,
 .custom.rec-active menubutton.bar-button:hover .icon-container {
-  background-color: #e03131;
-}
+  color: #e03131;
+} */
 
 .custom.rec-active menubutton.bar-button image,
 .custom.rec-active menubutton.bar-button .icon-container image,
 .custom.rec-active .bar-button-label {
-  color: #ffffff;
+  color: #f7768e;
 }
