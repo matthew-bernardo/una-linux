@@ -139,6 +139,11 @@ if in_container; then
   exit 0
 fi
 
+if "${_ASAHI_SETUP_SCRIPTS_DIR}/is_step_permanently_skipped.sh" setup_disk_encryption; then
+  echo "note: skipping LUKS mapper setup (permanently skipped in ${RUN_LOG_FILE})"
+  exit 0
+fi
+
 require_tty
 require_cmd lsblk
 
@@ -163,9 +168,14 @@ for row in "${luks_rows[@]}"; do
 done
 say ""
 
-choice="$(ask "Select a device [1], or s to skip: ")"
+choice="$(ask "Select a device [1], s to skip this run, or n to never ask again: ")"
 if [[ "${choice}" == [sS] || "${choice}" == skip || "${choice}" == Skip ]]; then
   say "Skipping LUKS mapper setup."
+  exit 0
+fi
+if [[ "${choice}" == [nN] || "${choice}" == never || "${choice}" == Never ]]; then
+  "${_ASAHI_SETUP_SCRIPTS_DIR}/mark_step_permanently_skipped.sh" setup_disk_encryption
+  say "Skipping LUKS mapper setup permanently (recorded in ${RUN_LOG_FILE})."
   exit 0
 fi
 [[ -z "${choice}" ]] && choice=1

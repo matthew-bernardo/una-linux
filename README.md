@@ -38,6 +38,10 @@ rescue system. Then `setup_disk_encryption.sh` opens that volume as a device
 mapper and writes `/etc/crypttab` with `discard` so Fedora’s `fstrim.timer`
 can TRIM. `/boot` stays unencrypted, same as now.
 
+At the device prompt, `s` skips mapper setup for this run; `n` records
+`setup_disk_encryption` in `permanently_skipped` so later applies do not ask
+again. Delete `.una_asahi_setup.json` to undo that.
+
 Do not run `cryptsetup reencrypt` from the live Asahi root. Use a USB rescue
 boot. Initramfs/GRUB (`rd.luks.uuid`) is not handled yet. Current walkthroughs:
 
@@ -52,15 +56,17 @@ Each apply writes `.una_asahi_setup.json` (gitignored) with:
 
 - the latest HEAD reflog id the script last ran against
 - which milestones completed successfully
+- which steps the user chose to skip permanently (`permanently_skipped`)
 
 The reflog id looks like `abc123@HEAD@{1726566411}` (commit SHA plus the
 timestamped reflog selector). `HEAD@{0}` is not used because it always means
 "current HEAD", not a specific event.
 
 On the same reflog entry, already-completed milestones are skipped. After HEAD
-moves (commit, amend, checkout, reset, …) every milestone runs again. Editing
-files without moving HEAD does not create a reflog entry, so those changes will
-not retrigger steps. Delete the JSON file to force a full rerun.
+moves (commit, amend, checkout, reset, …) every milestone runs again, except
+permanently skipped steps. Editing files without moving HEAD does not create a
+reflog entry, so those changes will not retrigger steps. Delete the JSON file
+to force a full rerun.
 
 If this checkout has no HEAD reflog yet, the recorded id is `NO_REFLOG`.
 
