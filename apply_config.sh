@@ -25,4 +25,5 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" --sudo configure_hid_apple "${SCRIPTS}/configure_hid_apple.sh"
 "${SCRIPTS}/run_step.sh" --sudo configure_notch "${SCRIPTS}/configure_notch.sh"
 
-echo "una: done"
+"${SCRIPTS}/print_una_header.sh"
+echo "✨ una: config applied successfully"
