@@ -1,0 +1,103 @@
+# Minimal. Copied to ~/.config/wayle/config.toml by `una load_theme`.
+# https://wayle.app/guide/editing-config
+#
+# Bar height is not a config field (padding + button size + scale). Use
+# ~/.config/wayle/styles/index.scss if you need an exact pixel height.
+
+[general]
+font-sans = "VCR OSD Mono"
+font-mono = "VCR OSD Mono"
+
+[styling]
+theme-provider = "wayle"
+rounding = "none"
+
+[styling.palette]
+bg = "#000000"
+surface = "#000000"
+elevated = "#000000"
+fg = "#ffffff"
+fg-muted = "#ffffff"
+primary = "#ffffff"
+red = "#ffffff"
+yellow = "#ffffff"
+green = "#ffffff"
+blue = "#ffffff"
+
+[bar]
+scale = 0.75
+location = "top"
+bg = "#000000"
+background-opacity = 100
+rounding = "none"
+shadow = "none"
+button-variant = "basic"
+button-rounding = "99999px"
+button-border-location = "none"
+button-label-weight = "normal"
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "hyprland-workspaces"]
+right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+
+[modules.hyprland-workspaces]
+display-mode = "label"
+numbering = "absolute"
+min-workspace-count = 0
+monitor-specific = false
+show-special = false
+active-indicator = "background"
+workspace-padding = 0.85
+active-color = "#ffffff"
+occupied-color = "#ffffff"
+empty-color = "#ffffff"
+container-bg-color = "#000000"
+
+[modules.dashboard]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+
+[modules.notifications]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[[modules.notifications.thresholds]]
+above = 1
+icon-color = "#f7768e"
+label-color = "#f7768e"
+
+[modules.volume]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[modules.network]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[modules.bluetooth]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[modules.battery]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[modules.clock]
+icon-color = "#ffffff"
+icon-bg-color = "#000000"
+label-color = "#ffffff"
+button-bg-color = "#000000"
+
+[modules.systray]
+button-bg-color = "#000000"

@@ -1,0 +1,95 @@
+/* Copied to ~/.config/wayle/styles/index.scss by `una load_theme`.
+   GTK4 often ignores font-family: var(--font-sans), so set it on widgets.
+   This face is Regular-only; bold weights make GTK substitute another font. */
+
+:root {
+  --cfg-font-sans: "VCR OSD Mono";
+  --cfg-font-mono: "VCR OSD Mono";
+  --font-sans: "VCR OSD Mono";
+  --font-mono: "VCR OSD Mono";
+  --fg-on-accent: #000000;
+}
+
+window,
+label,
+button,
+.bar-button-label,
+.workspace-label,
+.workspace-divider {
+  font-family: "VCR OSD Mono";
+}
+
+.workspace-label,
+.workspace-divider {
+  font-weight: normal;
+}
+
+menubutton.bar-button > button.toggle {
+  background-color: #000000;
+}
+
+menubutton.bar-button:hover > button.toggle {
+  background-color: #333333;
+  filter: none;
+}
+
+menubutton.bar-button .icon-container {
+  background-color: #000000;
+}
+
+menubutton.bar-button:hover .icon-container {
+  background-color: #333333;
+}
+
+menubutton.bar-button image,
+menubutton.bar-button .icon-container image {
+  color: var(--bar-btn-icon-color, #ffffff);
+}
+
+.bar-button-label {
+  color: var(--bar-btn-label-color, #ffffff);
+}
+
+.workspaces {
+  background-color: #000000;
+}
+
+.workspace {
+  border-radius: 9999px;
+  min-width: calc(2.5rem * var(--bar-scale));
+  min-height: calc(1.5rem * var(--bar-scale));
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.workspace-content {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.workspace .workspace-label,
+.workspace .workspace-icon,
+.workspace .workspace-custom-icon,
+.workspace .workspace-divider {
+  color: #ffffff;
+}
+
+.workspace.indicator-background.active {
+  background-color: #ffffff;
+}
+
+.workspace:hover:not(.active) {
+  background-color: #333333;
+}
+
+.systray-item:hover {
+  background-color: #333333;
+}
+
+.workspace.indicator-background.active .workspace-label,
+.workspace.indicator-background.active .workspace-icon,
+.workspace.indicator-background.active .workspace-custom-icon,
+.workspace.indicator-background.active .workspace-divider {
+  color: #000000;
+}
