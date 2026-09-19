@@ -7,3 +7,5 @@ user_packages:
   - wl-clipboard
   - grim
   - slurp
+  - awscli2
+  - nodejs
