@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Wayle custom-module helper for the screen-recording button.
 # UI only: idle "rec" -> countdown "3..."/"2..."/"1..." -> "REC".
+# Stopping prompts for a filename and writes a dummy file.
 set -euo pipefail
 
 STATE_DIR="${WAYLE_REC_DIR:-${XDG_RUNTIME_DIR:-/tmp}/wayle-rec}"
@@ -12,6 +13,85 @@ POLL_SEC=0.1
 usage() {
   echo "usage: wayle_rec [status|watch|toggle]" >&2
   exit 2
+}
+
+recordings_dir() {
+  if [[ -n "${WAYLE_REC_VIDEOS_DIR:-}" ]]; then
+    printf '%s' "${WAYLE_REC_VIDEOS_DIR}"
+    return
+  fi
+  local videos="${HOME}/Videos"
+  if command -v xdg-user-dir >/dev/null 2>&1; then
+    videos="$(xdg-user-dir VIDEOS)"
+  fi
+  printf '%s' "${videos}/ScreenRecordings"
+}
+
+suggested_filename() {
+  printf 'screc-%s.mp4' "$(date +%Y%m%d-%H%M%S)"
+}
+
+sanitize_filename() {
+  local name="$1"
+  name="${name//$'\r'/}"
+  name="${name#"${name%%[![:space:]]*}"}"
+  name="${name%"${name##*[![:space:]]}"}"
+  name="${name##*/}"
+  if [[ -z "${name}" || "${name}" == "." || "${name}" == ".." ]]; then
+    return 1
+  fi
+  printf '%s' "${name}"
+}
+
+prompt_filename() {
+  if [[ -v WAYLE_REC_NAME ]]; then
+    printf '%s' "${WAYLE_REC_NAME}"
+    return
+  fi
+
+  local suggested
+  suggested="$(suggested_filename)"
+  command -v wofi >/dev/null 2>&1 || {
+    printf '%s' "${suggested}"
+    return
+  }
+
+  ensure_dir
+  local -a cmd=(
+    wofi
+    --dmenu
+    --prompt "Save recording as"
+    --search "${suggested}"
+    --exec-search
+    --cache-file "${STATE_DIR}/wofi-save-cache"
+    --lines 1
+  )
+  if [[ -f "${HOME}/.config/wofi/style.css" ]]; then
+    cmd+=(--style "${HOME}/.config/wofi/style.css")
+  fi
+
+  local chosen=""
+  chosen="$("${cmd[@]}" </dev/null)" || true
+  printf '%s' "${chosen}"
+}
+
+notify_saved() {
+  local path="$1"
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send --app-name=wayle-rec "Recording saved" "${path}" || true
+  fi
+}
+
+save_recording() {
+  local chosen raw dest dir
+  raw="$(prompt_filename)"
+  chosen="$(sanitize_filename "${raw}")" || return 0
+
+  dir="$(recordings_dir)"
+  mkdir -p "${dir}"
+  dest="${dir}/${chosen}"
+  printf 'dummy screen recording\n' >"${dest}"
+  notify_saved "${dest}"
 }
 
 ensure_dir() {
@@ -132,7 +212,11 @@ cmd_watch() {
 }
 
 cmd_toggle() {
-  run_locked _toggle_locked
+  local action=""
+  action="$(run_locked _toggle_locked)"
+  if [[ "${action}" == save ]]; then
+    save_recording
+  fi
 }
 
 _toggle_locked() {
@@ -145,6 +229,7 @@ _toggle_locked() {
       ;;
     recording)
       write_state "idle"
+      printf 'save'
       ;;
     countdown)
       # Ignore clicks until the countdown becomes REC.
