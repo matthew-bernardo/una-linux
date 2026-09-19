@@ -10,3 +10,4 @@ user_packages:
   - awscli2
   - nodejs
   - python3.11
+  - gedit
