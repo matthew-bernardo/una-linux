@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# una — run checkout scripts from anywhere (una sync, una load_theme, …).
+set -euo pipefail
+
+resolve_root() {
+  local here candidate
+  if [[ -n "${UNA_ROOT:-}" ]]; then
+    printf '%s' "${UNA_ROOT}"
+    return
+  fi
+  here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  candidate="$(cd "${here}/../../.." && pwd 2>/dev/null || true)"
+  if [[ -n "${candidate}" && -f "${candidate}/sync.sh" ]]; then
+    printf '%s' "${candidate}"
+    return
+  fi
+  candidate="${HOME}/.una/una-linux"
+  if [[ -f "${candidate}/sync.sh" ]]; then
+    printf '%s' "${candidate}"
+    return
+  fi
+  echo "error: cannot find the una checkout. Set UNA_ROOT." >&2
+  exit 1
+}
+
+ROOT="$(resolve_root)"
+
+if [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-}" != "dumb" ]]; then
+  BOLD=$'\033[1m'
+  DIM=$'\033[2m'
+  CYAN=$'\033[36m'
+  MAGENTA=$'\033[35m'
+  RESET=$'\033[0m'
+else
+  BOLD=""
+  DIM=""
+  CYAN=""
+  MAGENTA=""
+  RESET=""
+fi
+
+usage() {
+  "${ROOT}/src/scripts/print_una_header.sh"
+  cat <<EOF
+${BOLD}${MAGENTA}una${RESET}  ${DIM}·${RESET}  commands from this checkout
+
+  ${CYAN}una sync${RESET} [ --check ]
+      Compare live configs with the repo and pick a version
+
+  ${CYAN}una load_theme${RESET} <theme-folder>
+      Load a HyprPanel theme from the checkout
+
+Set ${BOLD}UNA_ROOT${RESET} if the checkout is not at ~/.una/una-linux
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 2
+fi
+
+cmd="$1"
+shift
+
+case "${cmd}" in
+  -h | --help | help)
+    usage
+    exit 0
+    ;;
+  sync)
+    exec "${ROOT}/sync.sh" "$@"
+    ;;
+  load_theme | theme)
+    exec "${ROOT}/src/scripts/load_theme.sh" "$@"
+    ;;
+  *)
+    echo "unknown command: ${cmd}" >&2
+    echo "try: una sync  ·  una load_theme" >&2
+    exit 2
+    ;;
+esac

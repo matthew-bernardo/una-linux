@@ -27,7 +27,7 @@ ide() {
   set -o pipefail
 
   # Folders to search
-  local roots=("$HOME/personal_code" "$HOME/stacksync")
+  local roots=("$HOME/personal_code" "$HOME/stacksync" "$HOME/.una")
 
   # Parallel arrays: names[] for display, paths[] for full paths
   local -a names=()
@@ -71,10 +71,8 @@ ide() {
   local path="${paths[idx]}"
   [[ -d "$path" ]] || { echo "Selected path not found: $path"; return 1; }
 
-  local opener="~/AppImages/cursor"
-
   # Open in background
-  ~/AppImages/cursor --classic $path
+  cursor --classic $path
 }
 
 notify() {

@@ -19,3 +19,5 @@ alias runchat="~/stacksync/bin/run_chat_env.sh"
 alias teardownchat="~/stacksync/bin/run_chat_env.sh --teardown"
 
 alias yz='kitty yazi'
+alias unafig='cursor ~/.una/una-linux'
+

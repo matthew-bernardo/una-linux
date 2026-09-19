@@ -9,6 +9,9 @@ source "$ZSH/oh-my-zsh.sh"
 if [[ -d "$HOME/AppImages" && ":$PATH:" != *":$HOME/AppImages:"* ]]; then
   export PATH="$HOME/AppImages:$PATH"
 fi
+if [[ -d "$HOME/.config/una/bin" && ":$PATH:" != *":$HOME/.config/una/bin:"* ]]; then
+  export PATH="$HOME/.config/una/bin:$PATH"
+fi
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.deno/bin:$PATH"
 

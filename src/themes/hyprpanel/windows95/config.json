@@ -56,6 +56,7 @@
     }
   },
   "theme.bar.transparent": false,
+  "theme.bar.scaling": 100,
   "bar.workspaces.show_numbered": true,
   "bar.workspaces.numbered_active_indicator": "highlight",
   "theme.bar.buttons.workspaces.numbered_active_highlight_padding": "0.8em",

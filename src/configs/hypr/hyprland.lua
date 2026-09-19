@@ -29,6 +29,8 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hyprpanel")
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
+  -- So GTK/portal apps pick up dark mode
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
 end)
 
 -------------------------------
@@ -101,9 +103,12 @@ hl.config({
     kb_options = "",
     kb_rules = "",
     follow_mouse = 1,
-    sensitivity = 0,
+    -- Hyprland range is -1.0 .. 1.0; 1.0 is maximum pointer speed
+    sensitivity = 0.5,
     touchpad = {
       natural_scroll = true,
+      -- macOS-style: 1-finger click = left, 2 = right, 3 = middle
+      clickfinger_behavior = true,
     },
   },
 
@@ -115,6 +120,14 @@ hl.config({
   binds = {
     scroll_event_delay = 20,
   },
+})
+
+-- Built-in Asahi trackpad shows up as a mouse; set clickfinger on the device too.
+hl.device({
+  name = "apple-mtp-multi-touch",
+  natural_scroll = true,
+  clickfinger_behavior = true,
+  sensitivity = 0.7,
 })
 
 hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })

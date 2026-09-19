@@ -246,6 +246,13 @@
         dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/run_aliases.sh"
         mode: "0755"
 
+    - name: Copy una CLI
+      tags: [shell]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/una/una"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/una"
+        mode: "0755"
+
     - name: Install ClamAV
       tags: [clamav]
       become: true
