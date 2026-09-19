@@ -51,7 +51,7 @@ ${BOLD}${MAGENTA}una${RESET}  ${DIM}·${RESET}  commands from this checkout
       Compare live configs with the repo and pick a version
 
   ${CYAN}una load_theme${RESET} <theme>
-      Load a Wayle palette from the checkout
+      Load a Wayle theme (config.toml) from the checkout
 
 Set ${BOLD}UNA_ROOT${RESET} if the checkout is not at ~/.una/una-linux
 EOF

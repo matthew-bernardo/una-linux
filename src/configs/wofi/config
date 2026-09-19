@@ -1,0 +1,15 @@
+# Wofi. style.css is the live theme (tokyo-night by default).
+# `toggleTerminalTheme` copies themes/tokyo-light.css or tokyo-night.css over it
+# so wofi stays in sync with kitty.
+allow_images=true
+allow_markup=true
+hide_scroll=true
+image_size=24
+insensitive=true
+location=center
+matching=fuzzy
+no_actions=true
+orientation=vertical
+prompt=Search
+width=30%
+lines=12

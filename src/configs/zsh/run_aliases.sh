@@ -19,8 +19,7 @@ function_list=$(grep -E '^[a-zA-Z_][a-zA-Z0-9_]*\s*\(\)' "$FUNCTIONS_FILE" | sed
 menu_list=$(printf "%s\n%s\n" "$alias_list" "$function_list")
 
 # Show wofi selector
-selected=$(printf "%s\n" "$menu_list" | wofi --show dmenu --gtk-dark --columns=2 \
-    --style /home/matthew/.config/wofi/style.css)
+selected=$(printf "%s\n" "$menu_list" | wofi --show dmenu --columns=2)
 
 # If nothing selected, exit gracefully
 [[ -z "$selected" ]] && echo "No selection." && exit 0

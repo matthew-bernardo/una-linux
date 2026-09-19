@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Compare live config files with this checkout and prompt which version to keep.
 # Live → repo keeps your edits. Repo → live reverts the installed copy.
-# Themes are not synced (src/themes, kitty theme files).
+# Kitty theme files are not synced. The loaded Wayle theme's config.toml
+# and style.css are.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,7 +15,10 @@ usage() {
   cat <<EOF
 Usage: $(basename "$0") [--check]
 
-Compare non-theme config files in this repo with the live copies on disk.
+Compare config files in this repo with the live copies on disk.
+The loaded Wayle theme (from .una_asahi_setup.json) is compared with
+~/.config/wayle/config.toml and ~/.config/wayle/styles/index.scss.
+Kitty theme files are skipped.
 For each difference you pick a version:
 
   l  keep live  (copy live → repo)
@@ -94,13 +98,13 @@ declare -A FILE_MAP=(
   [zsh/functions.sh]="${HOME}/.una/functions.sh"
   [zsh/run_aliases.sh]="${HOME}/.config/una/bin/run_aliases.sh"
   [una/una]="${HOME}/.config/una/bin/una"
-  [wayle/config.toml]="${HOME}/.config/wayle/config.toml"
 )
 
 # configs/<name>/ → live directory (contents, not themes)
 declare -A DIR_MAP=(
   [hypr]="${HOME}/.config/hypr"
   [kitty]="${HOME}/.config/kitty"
+  [wofi]="${HOME}/.config/wofi"
 )
 
 should_skip() {
@@ -110,7 +114,7 @@ should_skip() {
     themes | themes/* | */themes | */themes/*) return 0 ;;
   esac
   case "${base}" in
-    current-theme.conf | hyprland.conf | .DS_Store | *.bak | *~ | *.swp | *.swo) return 0 ;;
+    current-theme.conf | style.css | hyprland.conf | .DS_Store | *.bak | *~ | *.swp | *.swo) return 0 ;;
   esac
   return 1
 }
@@ -305,6 +309,21 @@ done
 for rel in "${!FILE_MAP[@]}"; do
   add_pair "${CONFIGS}/${rel}" "${FILE_MAP[${rel}]}"
 done
+
+wayle_theme="$(python3 "${RUN_LOG_PY}" get-theme "${RUN_LOG_FILE}" 2>/dev/null || true)"
+if [[ -z "${wayle_theme}" ]]; then
+  say "  ${YELLOW}⚠️${RESET}  no current Wayle theme in ${DIM}.una_asahi_setup.json${RESET}  ${DIM}run una load_theme${RESET}"
+elif [[ "${wayle_theme}" == */* || "${wayle_theme}" == "." || "${wayle_theme}" == ".." ]]; then
+  say "  ${RED}❌${RESET}  invalid current_theme ${wayle_theme}"
+else
+  add_pair \
+    "${ASAHI_SETUP_ROOT}/themes/wayle/${wayle_theme}/config.toml" \
+    "${HOME}/.config/wayle/config.toml"
+  add_pair \
+    "${ASAHI_SETUP_ROOT}/themes/wayle/${wayle_theme}/style.css" \
+    "${HOME}/.config/wayle/styles/index.scss"
+fi
+
 warn_unmapped
 
 if ((${#PAIR_REPO[@]} > 0)); then

@@ -1,0 +1,24 @@
+/* Copied to ~/.config/wayle/styles/index.scss by `una load_theme`.
+   GTK4 often ignores font-family: var(--font-sans), so set it on widgets.
+   This face is Regular-only; bold weights make GTK substitute another font. */
+
+:root {
+  --cfg-font-sans: "VCR OSD Mono";
+  --cfg-font-mono: "VCR OSD Mono";
+  --font-sans: "VCR OSD Mono";
+  --font-mono: "VCR OSD Mono";
+}
+
+window,
+label,
+button,
+.bar-button-label,
+.workspace-label,
+.workspace-divider {
+  font-family: "VCR OSD Mono";
+}
+
+.workspace-label,
+.workspace-divider {
+  font-weight: normal;
+}

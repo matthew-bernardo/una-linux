@@ -73,6 +73,12 @@
         src: "{{ playbook_dir }}/../configs/kitty/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/kitty/"
 
+    - name: Copy wofi config and themes
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/wofi/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/wofi/"
+
     - name: Remove deprecated hyprland.conf
       tags: [hyprland]
       ansible.builtin.file:
@@ -115,24 +121,12 @@
         state: directory
         mode: "0755"
 
-    - name: Copy Wayle config
-      tags: [wayle]
-      ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../configs/wayle/"
-        dest: "{{ ansible_facts['user_dir'] }}/.config/wayle/"
-
     - name: Ensure Wayle themes directory exists
       tags: [wayle]
       ansible.builtin.file:
         path: "{{ ansible_facts['user_dir'] }}/.config/wayle/themes"
         state: directory
         mode: "0755"
-
-    - name: Copy Wayle themes
-      tags: [wayle]
-      ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../themes/wayle/"
-        dest: "{{ ansible_facts['user_dir'] }}/.config/wayle/themes/"
 
     - name: Install fonts
       tags: [fonts]

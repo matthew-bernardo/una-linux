@@ -1,0 +1,53 @@
+# Moo Dark. Copied to ~/.config/wayle/config.toml by `una load_theme`.
+# https://wayle.app/guide/editing-config
+#
+# Bar height is not a config field (padding + button size + scale). Use
+# ~/.config/wayle/styles/index.scss if you need an exact pixel height.
+
+[general]
+font-sans = "BigBoldPixel"
+font-mono = "BigBoldPixel"
+
+[styling]
+theme-provider = "wayle"
+rounding = "6px"
+
+[styling.palette]
+bg = "#000000"
+surface = "#000000"
+elevated = "#c0c0c0"
+fg = "#dedede"
+fg-muted = "#c0c0c0"
+primary = "#c0c0c0"
+red = "#dedede"
+yellow = "#c0c0c0"
+green = "#dedede"
+blue = "#dedede"
+
+[bar]
+scale = 0.75
+location = "top"
+bg = "#000000"
+background-opacity = 100
+rounding = "none"
+shadow = "none"
+button-rounding = "4px"
+button-label-size = 0.5
+button-label-weight = "normal"
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "hyprland-workspaces"]
+right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+
+[modules.hyprland-workspaces]
+display-mode = "label"
+numbering = "absolute"
+min-workspace-count = 0
+monitor-specific = false
+show-special = false
+active-indicator = "background"
+label-size = 0.5
+active-color = "#c0c0c0"
+occupied-color = "#dedede"
+container-bg-color = "#000000"

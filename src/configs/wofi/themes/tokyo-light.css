@@ -1,0 +1,67 @@
+/* Tokyo Night Light — same palette as kitty/themes/tokyo-light.conf */
+
+* {
+  font-family: "VCR OSD Mono";
+  font-size: 16px;
+}
+
+window {
+  margin: 0;
+  background-color: transparent;
+  color: #343b58;
+  border: none;
+}
+
+#outer-box {
+  margin: 0;
+  padding: 4px;
+  background-color: #e6e7ed;
+  border: 2px solid #0f4b6e;
+  border-radius: 10px;
+}
+
+#input {
+  margin: 12px 12px 8px;
+  padding: 8px 12px;
+  background-color: #d8dae3;
+  color: #343b58;
+  border: 1px solid #c4c8da;
+  border-radius: 8px;
+}
+
+#input:focus {
+  border-color: #0f4b6e;
+}
+
+#inner-box {
+  margin: 0 12px 12px;
+  background-color: #e6e7ed;
+}
+
+#scroll {
+  background-color: #e6e7ed;
+}
+
+#entry {
+  padding: 6px 8px;
+  background-color: transparent;
+  color: #343b58;
+  border-radius: 8px;
+}
+
+#entry:selected {
+  background-color: #b7c1e3;
+  color: #343b58;
+}
+
+#text {
+  color: #343b58;
+}
+
+#entry:selected #text {
+  color: #343b58;
+}
+
+#img {
+  margin-right: 8px;
+}

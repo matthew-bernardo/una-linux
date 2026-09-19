@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -62,13 +63,42 @@ def has_skip(log_path: str, step: str) -> int:
     return 0 if step in _permanent_skips(data) else 1
 
 
+THEME_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+
+
+def _current_theme(data: dict | None) -> str:
+    if not data:
+        return ""
+    theme = data.get("current_theme", "")
+    return theme if isinstance(theme, str) else ""
+
+
+def get_theme(log_path: str) -> None:
+    data = _load(log_path)
+    print(_current_theme(data))
+
+
+def set_theme(log_path: str, theme: str) -> None:
+    if not THEME_NAME_RE.fullmatch(theme):
+        raise SystemExit(f"invalid theme name: {theme}")
+    data = _load(log_path)
+    if not data:
+        data = {"revision": "", "completed_milestones": []}
+    data["current_theme"] = theme
+    data["updated_at"] = _now()
+    _save(log_path, data)
+
+
 def mark_complete(log_path: str, revision: str, milestone: str) -> None:
     data = _load(log_path)
+    theme = _current_theme(data)
     if not data or data.get("revision") != revision:
         skips = _permanent_skips(data)
         data = {"revision": revision, "completed_milestones": []}
         if skips:
             data["permanently_skipped"] = skips
+        if theme:
+            data["current_theme"] = theme
     data["revision"] = revision
     data["updated_at"] = _now()
     milestones = data.setdefault("completed_milestones", [])
@@ -93,7 +123,7 @@ def main(argv: list[str]) -> int:
         print(
             "usage: _run_log.py get-revision LOG | has-milestone LOG MILESTONE | "
             "has-skip LOG STEP | mark-complete LOG REVISION MILESTONE | "
-            "mark-skip LOG STEP",
+            "mark-skip LOG STEP | get-theme LOG | set-theme LOG THEME",
             file=sys.stderr,
         )
         return 2
@@ -111,6 +141,12 @@ def main(argv: list[str]) -> int:
         return 0
     if command == "mark-skip" and len(argv) == 4:
         mark_skip(argv[2], argv[3])
+        return 0
+    if command == "get-theme" and len(argv) == 3:
+        get_theme(argv[2])
+        return 0
+    if command == "set-theme" and len(argv) == 4:
+        set_theme(argv[2], argv[3])
         return 0
 
     print(f"unknown command or arguments: {' '.join(argv[1:])}", file=sys.stderr)

@@ -213,12 +213,12 @@ set_cursor() {
 
   # Try wofi (Wayland), then fzf, then minimal TTY picker
   if command -v wofi >/dev/null 2>&1; then
-    # Use user's style if defined
     local selection
-    if [[ -n "$WOFI_STYLE" ]]; then
-      selection="$(printf '%s\n' "$themes" | wofi --show dmenu --gtk-dark --style "$WOFI_STYLE")"
+    local wofi_style="${WOFI_STYLE:-$HOME/.config/wofi/style.css}"
+    if [[ -f "$wofi_style" ]]; then
+      selection="$(printf '%s\n' "$themes" | wofi --show dmenu --style "$wofi_style")"
     else
-      selection="$(printf '%s\n' "$themes" | wofi --show dmenu --gtk-dark)"
+      selection="$(printf '%s\n' "$themes" | wofi --show dmenu)"
     fi
     theme="$selection"
   elif command -v fzf >/dev/null 2>&1; then
@@ -235,11 +235,15 @@ set_cursor() {
 
 toggleTerminalTheme() {
     local config="$HOME/.config/kitty/current-theme.conf"
+    local wofi_style="$HOME/.config/wofi/style.css"
+    local wofi_themes="$HOME/.config/wofi/themes"
 
     if grep -q 'themes/tokyo-night.conf' "$config"; then
         echo 'include themes/tokyo-light.conf' > "$config"
+        cp "$wofi_themes/tokyo-light.css" "$wofi_style"
     else
         echo 'include themes/tokyo-night.conf' > "$config"
+        cp "$wofi_themes/tokyo-night.css" "$wofi_style"
     fi
 
     pkill -USR1 kitty

@@ -1,0 +1,51 @@
+# CMYK Dark. Copied to ~/.config/wayle/config.toml by `una load_theme`.
+# https://wayle.app/guide/editing-config
+#
+# Bar height is not a config field (padding + button size + scale). Use
+# ~/.config/wayle/styles/index.scss if you need an exact pixel height.
+
+[general]
+font-sans = "VCR OSD Mono"
+font-mono = "VCR OSD Mono"
+
+[styling]
+theme-provider = "wayle"
+rounding = "6px"
+
+[styling.palette]
+bg = "#1a1b26"
+surface = "#16161e"
+elevated = "#363b54"
+fg = "#c0caf5"
+fg-muted = "#787c99"
+primary = "#7aa2f7"
+red = "#f7768e"
+yellow = "#e0af68"
+green = "#73daca"
+blue = "#7dcfff"
+
+[bar]
+scale = 0.75
+location = "top"
+bg = "#000000"
+background-opacity = 100
+rounding = "none"
+shadow = "none"
+button-rounding = "4px"
+button-label-weight = "bold"
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "hyprland-workspaces"]
+right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+
+[modules.hyprland-workspaces]
+display-mode = "label"
+numbering = "absolute"
+min-workspace-count = 0
+monitor-specific = false
+show-special = false
+active-indicator = "background"
+active-color = "#7aa2f7"
+occupied-color = "#787c99"
+container-bg-color = "#1a1b26"

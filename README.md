@@ -15,9 +15,9 @@ That script currently has these install milestones:
 1. Confirm this is Fedora Asahi Remix
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
-4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` (tokyo-night / tokyo-light themes).
+4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` and `configs/wofi` to `~/.config/wofi` (tokyo-night / tokyo-light; `toggleTerminalTheme` switches both).
 5. Install Noto Color Emoji and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
-6. Install Wayle from source and copy `configs/wayle` plus `themes/wayle` palettes. Hyprland autostarts `~/.config/una/bin/start_panel`. Load a palette later with `una load_theme <name>` (`cmyk-dark`, `cmyk-light`, `moo`, `windows95`).
+6. Install Wayle from source and copy the current Wayle theme's `config.toml` (`una load_theme`; name stored in `.una_asahi_setup.json`). Hyprland autostarts `~/.config/una/bin/start_panel`. Themes: `cmyk-dark`, `cmyk-light`, `moo`, `moo-dark`, `windows95`.
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
 9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
@@ -57,6 +57,7 @@ Each apply writes `.una_asahi_setup.json` (gitignored) with:
 - the latest HEAD reflog id the script last ran against
 - which milestones completed successfully
 - which steps the user chose to skip permanently (`permanently_skipped`)
+- the loaded Wayle theme (`current_theme`), used by `una sync`
 
 The reflog id looks like `abc123@HEAD@{1726566411}` (commit SHA plus the
 timestamped reflog selector). `HEAD@{0}` is not used because it always means
@@ -94,12 +95,13 @@ scripts/
   configure_notch.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
-configs/wayle/                  # Wayle config.toml copied to ~/.config/wayle
 configs/una/                    # una CLI + start_panel launcher
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
+configs/wofi/                   # wofi config + tokyo-night/light CSS copied to ~/.config/wofi
 configs/zsh/zshrc               # zshrc to copy
 configs/zsh/aliases.sh          # copied to ~/.una/aliases.sh
 configs/zsh/functions.sh        # copied to ~/.una/functions.sh
-themes/wayle/                   # Wayle palettes copied to ~/.config/wayle/themes
+themes/wayle/<name>/config.toml # Wayle theme; `una load_theme` copies to ~/.config/wayle
+themes/wayle/<name>/style.css   # copied to ~/.config/wayle/styles/index.scss
 themes/fonts/                   # copied to ~/.local/share/fonts/una
 ```

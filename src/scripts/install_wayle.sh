@@ -70,3 +70,18 @@ fi
 
 install_start_panel
 activate_panel
+
+mkdir -p "${HOME}/.config/wayle/themes"
+python3 "${_ASAHI_SETUP_SCRIPTS_DIR}/_wayle_theme.py" extract-all \
+  "${ASAHI_SETUP_ROOT}/themes/wayle" \
+  "${HOME}/.config/wayle/themes"
+
+wayle_theme="$(python3 "${RUN_LOG_PY}" get-theme "${RUN_LOG_FILE}")"
+if [[ -z "${wayle_theme}" ]]; then
+  wayle_theme="cmyk-dark"
+fi
+if [[ ! -f "${HOME}/.config/wayle/config.toml" ]]; then
+  "${_ASAHI_SETUP_SCRIPTS_DIR}/load_theme.sh" "${wayle_theme}"
+elif [[ -z "$(python3 "${RUN_LOG_PY}" get-theme "${RUN_LOG_FILE}")" ]]; then
+  python3 "${RUN_LOG_PY}" set-theme "${RUN_LOG_FILE}" "${wayle_theme}"
+fi

@@ -1,0 +1,67 @@
+/* Tokyo Night — same palette as kitty/themes/tokyo-night.conf */
+
+* {
+  font-family: "VCR OSD Mono";
+  font-size: 16px;
+}
+
+window {
+  margin: 0;
+  background-color: transparent;
+  color: #787c99;
+  border: none;
+}
+
+#outer-box {
+  margin: 0;
+  padding: 4px;
+  background-color: #1a1b26;
+  border: 2px solid #7dcfff;
+  border-radius: 10px;
+}
+
+#input {
+  margin: 12px 12px 8px;
+  padding: 8px 12px;
+  background-color: #16161e;
+  color: #c0caf5;
+  border: 1px solid #363b54;
+  border-radius: 8px;
+}
+
+#input:focus {
+  border-color: #7dcfff;
+}
+
+#inner-box {
+  margin: 0 12px 12px;
+  background-color: #1a1b26;
+}
+
+#scroll {
+  background-color: #1a1b26;
+}
+
+#entry {
+  padding: 6px 8px;
+  background-color: transparent;
+  color: #787c99;
+  border-radius: 8px;
+}
+
+#entry:selected {
+  background-color: #515c7e;
+  color: #a9b1d6;
+}
+
+#text {
+  color: #787c99;
+}
+
+#entry:selected #text {
+  color: #a9b1d6;
+}
+
+#img {
+  margin-right: 8px;
+}
