@@ -37,7 +37,17 @@ button-label-weight = "bold"
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
-right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+right = ["custom-rec", "notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+
+[[modules.custom]]
+id = "rec"
+mode = "watch"
+restart-policy = "on-exit"
+command = "$HOME/.config/una/bin/wayle_rec watch"
+left-click = "$HOME/.config/una/bin/wayle_rec toggle"
+format = "rec"
+icon-name = "ld-camera-symbolic"
+tooltip-format = "Start screen recording"
 
 [modules.hyprland-workspaces]
 display-mode = "label"

@@ -210,7 +210,7 @@
         dest: "{{ ansible_facts['user_dir'] }}/.una/functions.sh"
 
     - name: Ensure una bin directory exists
-      tags: [shell]
+      tags: [shell, wayle]
       ansible.builtin.file:
         path: "{{ ansible_facts['user_dir'] }}/.config/una/bin"
         state: directory
@@ -231,10 +231,17 @@
         mode: "0755"
 
     - name: Copy panel launcher
-      tags: [shell]
+      tags: [shell, wayle]
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/una/start_panel"
         dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/start_panel"
+        mode: "0755"
+
+    - name: Copy Wayle rec helper
+      tags: [shell, wayle]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/una/wayle_rec"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/wayle_rec"
         mode: "0755"
 
     - name: Install ClamAV

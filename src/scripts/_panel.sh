@@ -3,10 +3,13 @@
 
 START_PANEL_DEST="${HOME}/.config/una/bin/start_panel"
 START_PANEL_SRC="${ASAHI_SETUP_ROOT}/configs/una/start_panel"
+WAYLE_REC_DEST="${HOME}/.config/una/bin/wayle_rec"
+WAYLE_REC_SRC="${ASAHI_SETUP_ROOT}/configs/una/wayle_rec"
 
 install_start_panel() {
   mkdir -p "$(dirname "${START_PANEL_DEST}")"
   install -m 0755 "${START_PANEL_SRC}" "${START_PANEL_DEST}"
+  install -m 0755 "${WAYLE_REC_SRC}" "${WAYLE_REC_DEST}"
 }
 
 patch_hyprland_panel_launcher() {

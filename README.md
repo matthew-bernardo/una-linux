@@ -95,7 +95,7 @@ scripts/
   configure_notch.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
-configs/una/                    # una CLI + start_panel launcher
+configs/una/                    # una CLI, start_panel launcher, wayle_rec module helper
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
 configs/wofi/                   # wofi config + tokyo-night/light CSS copied to ~/.config/wofi
 configs/zsh/zshrc               # zshrc to copy

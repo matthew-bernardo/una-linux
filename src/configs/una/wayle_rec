@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+# Wayle custom-module helper for the screen-recording button.
+# UI only: idle "rec" -> countdown "3..."/"2..."/"1..." -> "REC".
+set -euo pipefail
+
+STATE_DIR="${WAYLE_REC_DIR:-${XDG_RUNTIME_DIR:-/tmp}/wayle-rec}"
+STATE_FILE="${STATE_DIR}/state"
+LOCK_FILE="${STATE_DIR}/lock"
+COUNTDOWN_SECS=3
+POLL_SEC=0.1
+
+usage() {
+  echo "usage: wayle_rec [status|watch|toggle]" >&2
+  exit 2
+}
+
+ensure_dir() {
+  mkdir -p "${STATE_DIR}"
+}
+
+now() {
+  printf '%s' "${EPOCHREALTIME}"
+}
+
+elapsed_secs() {
+  local start="$1"
+  awk -v now="${EPOCHREALTIME}" -v start="${start}" 'BEGIN {
+    e = now - start
+    if (e < 0) e = 0
+    printf "%d", e
+  }'
+}
+
+read_state() {
+  if [[ -f "${STATE_FILE}" ]]; then
+    local line=""
+    IFS= read -r line <"${STATE_FILE}" || true
+    printf '%s' "${line}"
+  else
+    printf 'idle'
+  fi
+}
+
+write_state() {
+  ensure_dir
+  local tmp
+  tmp="$(mktemp "${STATE_DIR}/.state.XXXXXX")"
+  printf '%s\n' "$1" >"${tmp}"
+  mv -f "${tmp}" "${STATE_FILE}"
+}
+
+run_locked() {
+  ensure_dir
+  {
+    flock 9
+    "$@"
+  } 9>"${LOCK_FILE}"
+}
+
+emit_json() {
+  local text="$1"
+  local class="$2"
+  local tooltip="$3"
+  if [[ -n "${class}" ]]; then
+    printf '{"text":"%s","class":"%s","tooltip":"%s"}\n' "${text}" "${class}" "${tooltip}"
+  else
+    printf '{"text":"%s","tooltip":"%s"}\n' "${text}" "${tooltip}"
+  fi
+}
+
+render() {
+  local raw="$1"
+  local kind="${raw%% *}"
+  local rest="${raw#* }"
+
+  case "${kind}" in
+    countdown)
+      local elapsed
+      elapsed="$(elapsed_secs "${rest}")"
+      if ((elapsed >= COUNTDOWN_SECS)); then
+        emit_json "REC" "rec-active" "Stop screen recording"
+      else
+        emit_json "$((COUNTDOWN_SECS - elapsed))..." "rec-active" "Starting…"
+      fi
+      ;;
+    recording)
+      emit_json "REC" "rec-active" "Stop screen recording"
+      ;;
+    *)
+      emit_json "rec" "" "Start screen recording"
+      ;;
+  esac
+}
+
+promote_if_due() {
+  run_locked _promote_locked
+}
+
+_promote_locked() {
+  local raw
+  raw="$(read_state)"
+  if [[ "${raw}" == countdown* ]]; then
+    local start="${raw#* }"
+    local elapsed
+    elapsed="$(elapsed_secs "${start}")"
+    if ((elapsed >= COUNTDOWN_SECS)); then
+      write_state "recording"
+    fi
+  fi
+}
+
+cmd_status() {
+  promote_if_due
+  render "$(read_state)"
+}
+
+cmd_watch() {
+  if [[ -z "${WAYLE_REC_STDBUF:-}" ]] && command -v stdbuf >/dev/null 2>&1; then
+    exec env WAYLE_REC_STDBUF=1 stdbuf -oL -eL "$0" watch
+  fi
+
+  local last="" line
+  while true; do
+    promote_if_due
+    line="$(render "$(read_state)")"
+    if [[ "${line}" != "${last}" ]]; then
+      printf '%s\n' "${line}"
+      last="${line}"
+    fi
+    sleep "${POLL_SEC}"
+  done
+}
+
+cmd_toggle() {
+  run_locked _toggle_locked
+}
+
+_toggle_locked() {
+  local raw kind
+  raw="$(read_state)"
+  kind="${raw%% *}"
+  case "${kind}" in
+    idle | "")
+      write_state "countdown $(now)"
+      ;;
+    recording)
+      write_state "idle"
+      ;;
+    countdown)
+      # Ignore clicks until the countdown becomes REC.
+      ;;
+    *)
+      write_state "idle"
+      ;;
+  esac
+}
+
+case "${1:-status}" in
+  status) cmd_status ;;
+  watch) cmd_watch ;;
+  toggle) cmd_toggle ;;
+  -h | --help | help) usage ;;
+  *) usage ;;
+esac

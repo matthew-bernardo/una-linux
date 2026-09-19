@@ -98,6 +98,7 @@ declare -A FILE_MAP=(
   [zsh/functions.sh]="${HOME}/.una/functions.sh"
   [zsh/run_aliases.sh]="${HOME}/.config/una/bin/run_aliases.sh"
   [una/una]="${HOME}/.config/una/bin/una"
+  [una/wayle_rec]="${HOME}/.config/una/bin/wayle_rec"
 )
 
 # configs/<name>/ → live directory (contents, not themes)
