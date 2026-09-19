@@ -64,6 +64,17 @@ terminal_cols() {
   printf '%s' "80"
 }
 
+print_cat() {
+  local line started=0
+  for line in "${CAT_ART[@]}"; do
+    if [[ "${started}" -eq 0 && -z "${line}" ]]; then
+      continue
+    fi
+    started=1
+    printf '%s\n' "${line}"
+  done
+}
+
 print_block() {
   local color="$1"
   shift
@@ -94,17 +105,31 @@ print_side_by_side() {
   done
 }
 
-cat_width="$(max_visible_width "${CAT_ART[@]}")"
-una_width="$(max_visible_width "${UNA_ART[@]}")"
-cols="$(terminal_cols)"
-needed=$((cat_width + ${#GAP} + una_width))
+print_header() {
+  local cat_width una_width cols needed
+  cat_width="$(max_visible_width "${CAT_ART[@]}")"
+  una_width="$(max_visible_width "${UNA_ART[@]}")"
+  cols="$(terminal_cols)"
+  needed=$((cat_width + ${#GAP} + una_width))
 
-printf '\n'
-if (( cols >= needed )); then
-  print_side_by_side CAT_ART UNA_ART "${cat_width}" "${GAP}"
-else
-  print_block "${CYAN}" "${CAT_ART[@]}"
   printf '\n'
-  print_block "${MAGENTA}" "${UNA_ART[@]}"
+  if (( cols >= needed )); then
+    print_side_by_side CAT_ART UNA_ART "${cat_width}" "${GAP}"
+  else
+    print_block "${CYAN}" "${CAT_ART[@]}"
+    printf '\n'
+    print_block "${MAGENTA}" "${UNA_ART[@]}"
+  fi
+  printf '\n'
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  case "${1:-}" in
+    --cat)
+      print_cat
+      ;;
+    *)
+      print_header
+      ;;
+  esac
 fi
-printf '\n'
