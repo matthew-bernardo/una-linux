@@ -1,0 +1,51 @@
+# Versioned Wayle overrides. CLI/GUI writes go to runtime.toml instead.
+# https://wayle.app/guide/editing-config
+#
+# Bar height is not a config field (padding + button size + scale). Use
+# ~/.config/wayle/styles/index.scss if you need an exact pixel height.
+
+[general]
+font-sans = "VCR OSD Mono"
+font-mono = "VCR OSD Mono"
+
+[styling]
+theme-provider = "wayle"
+rounding = "3px"
+
+[styling.palette]
+bg = "#000000"
+surface = "#1a1b26"
+elevated = "#2a2b36"
+fg = "#fdffff"
+fg-muted = "#00ebeb"
+primary = "#00ebeb"
+red = "#ef15bf"
+yellow = "#ebef15"
+green = "#00ebeb"
+blue = "#00ebeb"
+
+[bar]
+location = "top"
+bg = "#000000"
+background-opacity = 100
+rounding = "none"
+shadow = "none"
+button-rounding = "none"
+button-label-weight = "normal"
+scale=0.8
+
+[[bar.layout]]
+monitor = "*"
+left = ["dashboard", "hyprland-workspaces"]
+right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+
+[modules.hyprland-workspaces]
+display-mode = "label"
+numbering = "absolute"
+min-workspace-count = 0
+monitor-specific = false
+show-special = false
+active-indicator = "background"
+active-color = "#00ebeb"
+occupied-color = "#c3c3c3"
+container-bg-color = "#000000"

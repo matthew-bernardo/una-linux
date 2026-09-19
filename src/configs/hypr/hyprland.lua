@@ -18,6 +18,7 @@ local terminal = "kitty"
 local fileManager = "yazi"
 local menu = "wofi --show drun"
 local runAliases = os.getenv("HOME") .. "/.config/una/bin/run_aliases.sh"
+local startPanel = os.getenv("HOME") .. "/.config/una/bin/start_panel"
 local browser = "chromium-browser"
 local mainMod = "SUPER"
 
@@ -26,7 +27,7 @@ local mainMod = "SUPER"
 -------------------
 
 hl.on("hyprland.start", function()
-  hl.exec_cmd("hyprpanel")
+  hl.exec_cmd(startPanel)
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
   -- So GTK/portal apps pick up dark mode
@@ -189,7 +190,7 @@ hl.bind(mainMod .. " + SHIFT + space", hl.dsp.exec_cmd(runAliases))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprpanel -q; hyprpanel"))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(startPanel .. " restart"))
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))

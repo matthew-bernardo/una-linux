@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Start, restart, or stop Wayle. Used by Hyprland autostart.
+# Stops a leftover HyprPanel process if one is still on PATH.
+set -euo pipefail
+
+export PATH="${HOME}/.cargo/bin:${HOME}/.local/bin:${HOME}/.config/una/bin:${PATH}"
+if [[ -f "${HOME}/.cargo/env" ]]; then
+  # shellcheck source=/dev/null
+  source "${HOME}/.cargo/env"
+fi
+
+ACTION="${1:-start}"
+
+stop_hyprpanel() {
+  if command -v hyprpanel >/dev/null 2>&1; then
+    hyprpanel -q >/dev/null 2>&1 || true
+  fi
+}
+
+stop_wayle() {
+  if command -v wayle >/dev/null 2>&1; then
+    wayle panel stop >/dev/null 2>&1 || true
+  fi
+}
+
+start_wayle() {
+  command -v wayle >/dev/null 2>&1 || {
+    echo "error: wayle is not on PATH (is ~/.cargo/bin on PATH?)" >&2
+    return 1
+  }
+  stop_hyprpanel
+  wayle panel start
+}
+
+case "${ACTION}" in
+  start)
+    start_wayle
+    ;;
+  restart)
+    stop_hyprpanel
+    stop_wayle
+    start_wayle
+    ;;
+  stop)
+    stop_hyprpanel
+    stop_wayle
+    ;;
+  status)
+    printf '%s\n' "wayle"
+    ;;
+  *)
+    echo "usage: start_panel [start|restart|stop|status]" >&2
+    exit 2
+    ;;
+esac

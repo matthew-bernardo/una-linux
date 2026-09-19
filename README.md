@@ -17,14 +17,14 @@ That script currently has these install milestones:
 3. Install `ansible-core` if `ansible-playbook` is missing
 4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` (tokyo-night / tokyo-light themes).
 5. Install Noto Color Emoji and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
-6. Install HyprPanel from [source](https://github.com/Jas-SinghFSU/HyprPanel) into `~/.una/HyprPanel` and copy themes to `~/.config/hyprpanel/themes`
+6. Install Wayle from source and copy `configs/wayle` plus `themes/wayle` palettes. Hyprland autostarts `~/.config/una/bin/start_panel`. Load a palette later with `una load_theme <name>` (`cmyk-dark`, `cmyk-light`, `moo`, `windows95`).
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
 9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
 10. Persist Apple keyboard Fn ↔ Left Ctrl swap (`hid_apple.swap_fn_leftctrl=1` via `/etc/modprobe.d/hid_apple.conf` + `dracut -f`)
 11. Enable the MacBook notch (`appledrm.show_notch=1` via `grubby`; reboot to take effect)
 
-Hyprland, HyprPanel, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
+Hyprland, Wayle, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
 Privileged milestones prompt for sudo on the terminal *before* the spinner starts, then keep a cached ticket so Ansible `become` can run `sudo -n`. That also writes `Defaults timestamp_type=global` to `/etc/sudoers.d/una-setup` so the ticket works without a tty.
 
@@ -83,7 +83,8 @@ scripts/
   install_ansible.sh
   install_window_manager.sh
   install_fonts.sh
-  install_hyprpanel.sh
+  install_wayle.sh
+  load_theme.sh
   install_shell.sh
   install_clamav.sh
   check_disk_encryption.sh
@@ -93,9 +94,12 @@ scripts/
   configure_notch.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
+configs/wayle/                  # Wayle config.toml copied to ~/.config/wayle
+configs/una/                    # una CLI + start_panel launcher
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
 configs/zsh/zshrc               # zshrc to copy
 configs/zsh/aliases.sh          # copied to ~/.una/aliases.sh
 configs/zsh/functions.sh        # copied to ~/.una/functions.sh
+themes/wayle/                   # Wayle palettes copied to ~/.config/wayle/themes
 themes/fonts/                   # copied to ~/.local/share/fonts/una
 ```

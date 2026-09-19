@@ -1,92 +1,216 @@
 #!/usr/bin/env bash
-# Load a HyprPanel theme folder: merge config.json, copy modules.scss, then
-# apply theme.json via `hyprpanel useTheme` (which requires an absolute path).
+# Load a Wayle palette: copy it into ~/.config/wayle/themes, merge it into
+# the live config.toml, and drop matching runtime.toml overrides so the
+# checkout theme actually takes effect.
 #
-# Prefers themes from this repo (src/themes/hyprpanel). Falls back to the
-# installed copy under ~/.config/hyprpanel/themes only when the repo copy is
+# Prefers themes from this repo (src/themes/wayle). Falls back to the
+# installed copy under ~/.config/wayle/themes only when the repo copy is
 # missing — otherwise edits in the checkout never take effect.
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 
-REPO_THEMES_DIR="${ASAHI_SETUP_ROOT}/themes/hyprpanel"
-INSTALLED_THEMES_DIR="${HOME}/.config/hyprpanel/themes"
-HYPRPANEL_DIR="${HOME}/.config/hyprpanel"
-LIVE_CONFIG="${HYPRPANEL_DIR}/config.json"
-LIVE_MODULES="${HYPRPANEL_DIR}/modules.scss"
+export PATH="${HOME}/.cargo/bin:${PATH}"
+if [[ -f "${HOME}/.cargo/env" ]]; then
+  # shellcheck source=/dev/null
+  source "${HOME}/.cargo/env"
+fi
 
-usage() {
-  echo "Usage: una load_theme <theme-folder>" >&2
-  echo "Available themes:" >&2
+REPO_THEMES_DIR="${ASAHI_SETUP_ROOT}/themes/wayle"
+INSTALLED_THEMES_DIR="${HOME}/.config/wayle/themes"
+WAYLE_DIR="${HOME}/.config/wayle"
+LIVE_CONFIG="${WAYLE_DIR}/config.toml"
+LIVE_RUNTIME="${WAYLE_DIR}/runtime.toml"
+REPO_CONFIG="${ASAHI_SETUP_ROOT}/configs/wayle/config.toml"
+
+list_themes() {
   local dir
   for dir in "${REPO_THEMES_DIR}" "${INSTALLED_THEMES_DIR}"; do
     if [[ -d "${dir}" ]]; then
-      find "${dir}" -mindepth 1 -maxdepth 1 -type d -printf '  %f\n' | sort -u >&2
-      break
+      find "${dir}" -maxdepth 1 -type f -name '*.toml' -printf '  %f\n' \
+        | sed 's/\.toml$//' | sort -u >&2
+      return
     fi
   done
+}
+
+usage() {
+  echo "Usage: una load_theme <theme>" >&2
+  echo "Available themes:" >&2
+  list_themes
   exit 1
 }
 
 [[ $# -eq 1 ]] || usage
 
 THEME_NAME="${1%/}"
+THEME_NAME="${THEME_NAME%.toml}"
 if [[ "${THEME_NAME}" == */* || "${THEME_NAME}" == "." || "${THEME_NAME}" == ".." ]]; then
-  echo "error: pass a theme folder name, not a path (${THEME_NAME})" >&2
+  echo "error: pass a theme name, not a path (${THEME_NAME})" >&2
   usage
 fi
 
-THEME_DIR=""
-if [[ -d "${REPO_THEMES_DIR}/${THEME_NAME}" ]]; then
-  THEME_DIR="$(cd "${REPO_THEMES_DIR}/${THEME_NAME}" && pwd)"
-elif [[ -d "${INSTALLED_THEMES_DIR}/${THEME_NAME}" ]]; then
-  THEME_DIR="$(cd "${INSTALLED_THEMES_DIR}/${THEME_NAME}" && pwd)"
+THEME_SRC=""
+if [[ -f "${REPO_THEMES_DIR}/${THEME_NAME}.toml" ]]; then
+  THEME_SRC="$(cd "${REPO_THEMES_DIR}" && pwd)/${THEME_NAME}.toml"
+elif [[ -f "${INSTALLED_THEMES_DIR}/${THEME_NAME}.toml" ]]; then
+  THEME_SRC="$(cd "${INSTALLED_THEMES_DIR}" && pwd)/${THEME_NAME}.toml"
 else
-  echo "error: no theme folder named '${THEME_NAME}'" >&2
+  echo "error: no Wayle theme named '${THEME_NAME}'" >&2
   usage
 fi
 
-THEME_JSON="${THEME_DIR}/theme.json"
-THEME_CONFIG="${THEME_DIR}/config.json"
-THEME_MODULES="${THEME_DIR}/modules.scss"
-
-if [[ ! -f "${THEME_JSON}" ]]; then
-  echo "error: missing ${THEME_JSON}" >&2
-  exit 1
-fi
-if [[ ! -f "${THEME_CONFIG}" ]]; then
-  echo "error: missing ${THEME_CONFIG}" >&2
-  exit 1
-fi
-if ! command -v hyprpanel >/dev/null; then
-  echo "error: hyprpanel is not on PATH" >&2
-  exit 1
+mkdir -p "${INSTALLED_THEMES_DIR}"
+if [[ "${THEME_SRC}" != "${INSTALLED_THEMES_DIR}/${THEME_NAME}.toml" ]]; then
+  cp "${THEME_SRC}" "${INSTALLED_THEMES_DIR}/${THEME_NAME}.toml"
 fi
 
-mkdir -p "${HYPRPANEL_DIR}"
+if [[ ! -f "${LIVE_CONFIG}" ]]; then
+  if [[ -f "${REPO_CONFIG}" ]]; then
+    cp "${REPO_CONFIG}" "${LIVE_CONFIG}"
+  else
+    printf '%s\n' "[styling.palette]" >"${LIVE_CONFIG}"
+  fi
+fi
 
-echo "loading theme from ${THEME_DIR}"
+echo "loading theme from ${THEME_SRC}"
 
-python3 - "${LIVE_CONFIG}" "${THEME_CONFIG}" <<'PY'
-import json
+python3 - "${THEME_SRC}" "${LIVE_CONFIG}" "${LIVE_RUNTIME}" <<'PY'
+import re
 import sys
+import tomllib
 from pathlib import Path
 
-live_path = Path(sys.argv[1])
-incoming_path = Path(sys.argv[2])
-incoming = json.loads(incoming_path.read_text())
-live = json.loads(live_path.read_text()) if live_path.exists() else {}
-live.update(incoming)
-live_path.write_text(json.dumps(live, indent=2) + "\n")
-print(f"merged config ({len(incoming)} keys); theme.bar.scaling={live.get('theme.bar.scaling', '<unset>')}")
+PALETTE_KEYS = [
+    "bg",
+    "surface",
+    "elevated",
+    "fg",
+    "fg-muted",
+    "primary",
+    "red",
+    "yellow",
+    "green",
+    "blue",
+]
+
+theme_path = Path(sys.argv[1])
+config_path = Path(sys.argv[2])
+runtime_path = Path(sys.argv[3])
+
+raw = tomllib.loads(theme_path.read_text())
+palette = {}
+for key, value in raw.items():
+    normalized = key.replace("_", "-")
+    if normalized in PALETTE_KEYS:
+        palette[normalized] = value
+
+missing = [key for key in PALETTE_KEYS if key not in palette]
+if missing:
+    raise SystemExit(f"theme missing keys: {', '.join(missing)}")
+
+bg = palette["bg"]
+primary = palette["primary"]
+occupied = palette["fg"]
+
+
+def replace_table(text: str, header: str, body: str) -> str:
+    if not text.endswith("\n"):
+        text += "\n"
+    pattern = re.compile(
+        rf"^\[{re.escape(header)}\]\n(?:^(?!\[).*\n)*",
+        re.MULTILINE,
+    )
+    block = f"[{header}]\n{body}"
+    if not block.endswith("\n"):
+        block += "\n"
+    if pattern.search(text):
+        return pattern.sub(lambda _: block, text, count=1)
+    return text + "\n" + block
+
+
+def set_key_in_table(text: str, table: str, key: str, value: str) -> str:
+    if not text.endswith("\n"):
+        text += "\n"
+    pattern = re.compile(
+        rf"(^\[{re.escape(table)}\]\n)((?:^(?!\[).*\n)*)",
+        re.MULTILINE,
+    )
+    match = pattern.search(text)
+    if not match:
+        return text
+    header, body = match.group(1), match.group(2)
+    line = f'{key} = "{value}"'
+    key_pat = re.compile(rf"^{re.escape(key)} = .*$", re.MULTILINE)
+    if key_pat.search(body):
+        body = key_pat.sub(line, body, count=1)
+    else:
+        if body and not body.endswith("\n"):
+            body += "\n"
+        body += line + "\n"
+    return text[: match.start()] + header + body + text[match.end() :]
+
+
+def remove_table(text: str, header: str) -> str:
+    pattern = re.compile(
+        rf"^\[{re.escape(header)}\]\n(?:^(?!\[).*\n)*",
+        re.MULTILINE,
+    )
+    return pattern.sub("", text, count=1)
+
+
+def remove_key_in_table(text: str, table: str, key: str) -> str:
+    pattern = re.compile(
+        rf"(^\[{re.escape(table)}\]\n)((?:^(?!\[).*\n)*)",
+        re.MULTILINE,
+    )
+    match = pattern.search(text)
+    if not match:
+        return text
+    header, body = match.group(1), match.group(2)
+    body = re.sub(rf"^{re.escape(key)} = .*\n?", "", body, count=1, flags=re.MULTILINE)
+    return text[: match.start()] + header + body + text[match.end() :]
+
+
+palette_body = "".join(f'{key} = "{palette[key]}"\n' for key in PALETTE_KEYS)
+config = config_path.read_text()
+config = replace_table(config, "styling.palette", palette_body)
+config = set_key_in_table(config, "bar", "bg", bg)
+config = set_key_in_table(config, "modules.hyprland-workspaces", "active-color", primary)
+config = set_key_in_table(config, "modules.hyprland-workspaces", "occupied-color", occupied)
+config = set_key_in_table(config, "modules.hyprland-workspaces", "container-bg-color", bg)
+config_path.write_text(config)
+
+if runtime_path.exists():
+    runtime = runtime_path.read_text()
+    runtime = remove_table(runtime, "styling.palette")
+    runtime = remove_key_in_table(runtime, "bar", "bg")
+    for key in ("active-color", "occupied-color", "container-bg-color"):
+        runtime = remove_key_in_table(runtime, "modules.hyprland-workspaces", key)
+    runtime_path.write_text(runtime)
+
+print(f"applied palette bg={bg} primary={primary}")
 PY
 
-if [[ -f "${THEME_MODULES}" ]]; then
-  cp "${THEME_MODULES}" "${LIVE_MODULES}"
-else
-  printf '%s\n' '/* no extra modules.scss for this theme */' > "${LIVE_MODULES}"
+if command -v wayle >/dev/null 2>&1; then
+  for path in \
+    styling.palette.bg \
+    styling.palette.surface \
+    styling.palette.elevated \
+    styling.palette.fg \
+    styling.palette.fg-muted \
+    styling.palette.primary \
+    styling.palette.red \
+    styling.palette.yellow \
+    styling.palette.green \
+    styling.palette.blue \
+    bar.bg \
+    modules.hyprland-workspaces.active-color \
+    modules.hyprland-workspaces.occupied-color \
+    modules.hyprland-workspaces.container-bg-color
+  do
+    wayle config reset "${path}" >/dev/null 2>&1 || true
+  done
 fi
-
-hyprpanel useTheme "${THEME_JSON}"
 
 echo "loaded ${THEME_NAME}"

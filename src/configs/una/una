@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# una — run checkout scripts from anywhere (una sync, una load_theme, …).
+# una — run checkout scripts from anywhere (una apply, una sync, …).
 set -euo pipefail
 
 resolve_root() {
@@ -44,11 +44,14 @@ usage() {
   cat <<EOF
 ${BOLD}${MAGENTA}una${RESET}  ${DIM}·${RESET}  commands from this checkout
 
+  ${CYAN}una apply${RESET}
+      Apply this checkout (packages, configs, milestones)
+
   ${CYAN}una sync${RESET} [ --check ]
       Compare live configs with the repo and pick a version
 
-  ${CYAN}una load_theme${RESET} <theme-folder>
-      Load a HyprPanel theme from the checkout
+  ${CYAN}una load_theme${RESET} <theme>
+      Load a Wayle palette from the checkout
 
 Set ${BOLD}UNA_ROOT${RESET} if the checkout is not at ~/.una/una-linux
 EOF
@@ -67,6 +70,9 @@ case "${cmd}" in
     usage
     exit 0
     ;;
+  apply)
+    exec "${ROOT}/apply_config.sh" "$@"
+    ;;
   sync)
     exec "${ROOT}/sync.sh" "$@"
     ;;
@@ -75,7 +81,7 @@ case "${cmd}" in
     ;;
   *)
     echo "unknown command: ${cmd}" >&2
-    echo "try: una sync  ·  una load_theme" >&2
+    echo "try: una apply  ·  una sync  ·  una load_theme" >&2
     exit 2
     ;;
 esac

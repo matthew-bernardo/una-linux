@@ -79,79 +79,60 @@
         path: "{{ ansible_facts['user_dir'] }}/.config/hypr/hyprland.conf"
         state: absent
 
-    - name: Install HyprPanel packages
-      tags: [hyprpanel]
+    - name: Install Wayle packages
+      tags: [wayle]
       become: true
       ansible.builtin.dnf:
         name:
           - git
-          - meson
-          - ninja-build
+          - cmake
+          - pkgconf-pkg-config
+          - gtk4-devel
+          - gtk4-layer-shell-devel
+          - gtksourceview5-devel
+          - pulseaudio-libs-devel
+          - fftw-devel
+          - pipewire-devel
+          - systemd-devel
+          - clang
           - gcc
           - gcc-c++
-          - gjs
-          - gtk3
-          - gtk3-devel
-          - gtk-layer-shell
-          - gtk-layer-shell-devel
-          - gtk4-devel
-          - gtk4-layer-shell
-          - gtk4-layer-shell-devel
-          - libgtop2
-          - libgtop2-devel
-          - NetworkManager
-          - NetworkManager-libnm-devel
-          - wl-clipboard
-          - upower
-          - gvfs
-          - gtksourceview3
-          - libsoup3
-          - libsoup3-devel
-          - gdk-pixbuf2-devel
-          - nodejs
-          - npm
-          - golang
-          - vala
-          - valadoc
-          - pkgconf
-          - gobject-introspection-devel
-          - wayland-protocols-devel
-          - gjs-devel
-          - json-glib-devel
-          - wireplumber-devel
-          - libdbusmenu-gtk3-devel
-          - gnome-bluetooth-libs-devel
-          - fontconfig
-          - bluez
-          - bluez-tools
-          - gnome-bluetooth
-          - power-profiles-daemon
-          - btop
-          - hyprpicker
-          - wf-recorder
-          - grim
-          - slurp
-          - alsa-lib-devel
-          - fftw3-devel
-          - pulseaudio-libs-devel
-          - pipewire-devel
-          - iniparser-devel
-          - libtool
         state: present
         update_cache: true
 
-    - name: Ensure HyprPanel config directory exists
-      tags: [hyprpanel]
+    - name: Install rustup if packaged
+      tags: [wayle]
+      become: true
+      ansible.builtin.dnf:
+        name: rustup
+        state: present
+      failed_when: false
+
+    - name: Ensure Wayle config directory exists
+      tags: [wayle]
       ansible.builtin.file:
-        path: "{{ ansible_facts['user_dir'] }}/.config/hyprpanel/themes"
+        path: "{{ ansible_facts['user_dir'] }}/.config/wayle"
         state: directory
         mode: "0755"
 
-    - name: Copy HyprPanel themes
-      tags: [hyprpanel]
+    - name: Copy Wayle config
+      tags: [wayle]
       ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../themes/hyprpanel/"
-        dest: "{{ ansible_facts['user_dir'] }}/.config/hyprpanel/themes/"
+        src: "{{ playbook_dir }}/../configs/wayle/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/wayle/"
+
+    - name: Ensure Wayle themes directory exists
+      tags: [wayle]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/wayle/themes"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Wayle themes
+      tags: [wayle]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../themes/wayle/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/wayle/themes/"
 
     - name: Install fonts
       tags: [fonts]
@@ -253,6 +234,13 @@
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/una/una"
         dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/una"
+        mode: "0755"
+
+    - name: Copy panel launcher
+      tags: [shell]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/una/start_panel"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/start_panel"
         mode: "0755"
 
     - name: Install ClamAV

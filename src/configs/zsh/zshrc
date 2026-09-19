@@ -12,6 +12,9 @@ fi
 if [[ -d "$HOME/.config/una/bin" && ":$PATH:" != *":$HOME/.config/una/bin:"* ]]; then
   export PATH="$HOME/.config/una/bin:$PATH"
 fi
+if [[ -f "$HOME/.cargo/env" ]]; then
+  source "$HOME/.cargo/env"
+fi
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.deno/bin:$PATH"
 
