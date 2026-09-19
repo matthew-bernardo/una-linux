@@ -22,5 +22,7 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" --sudo install_hyprpanel "${SCRIPTS}/install_hyprpanel.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_clamav "${SCRIPTS}/install_clamav.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_packages "${SCRIPTS}/install_packages.sh"
+"${SCRIPTS}/run_step.sh" --sudo configure_hid_apple "${SCRIPTS}/configure_hid_apple.sh"
+"${SCRIPTS}/run_step.sh" --sudo configure_notch "${SCRIPTS}/configure_notch.sh"
 
 echo "una: done"

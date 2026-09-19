@@ -20,6 +20,7 @@
         "volume",
         "network",
         "bluetooth",
+        "battery",
         "clock",
         "systray"
       ]
@@ -62,6 +63,7 @@
   "theme.bar.buttons.workspaces.numbered_active_highlight_border": "2em",
   "theme.bar.menus.menu.dashboard.scaling": 65,
   "theme.bar.location": "bottom",
+  "scalingPriority": "hyprland",
   "bar.autoHide": "never",
   "theme.bar.menus.border.radius": "0.0em",
   "theme.bar.buttons.borderSize": "0.1em",

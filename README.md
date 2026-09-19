@@ -21,6 +21,8 @@ That script currently has these install milestones:
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
 9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
+10. Persist Apple keyboard Fn ↔ Left Ctrl swap (`hid_apple.swap_fn_leftctrl=1` via `/etc/modprobe.d/hid_apple.conf` + `dracut -f`)
+11. Enable the MacBook notch (`appledrm.show_notch=1` via `grubby`; reboot to take effect)
 
 Hyprland, HyprPanel, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
@@ -81,6 +83,8 @@ scripts/
   check_disk_encryption.sh
   setup_disk_encryption.sh
   install_packages.sh
+  configure_hid_apple.sh
+  configure_notch.sh
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
