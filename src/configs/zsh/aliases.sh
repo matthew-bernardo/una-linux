@@ -5,7 +5,7 @@ alias nixfig="sudo vim /etc/nixos/configuration.nix"
 alias hyprfig="vim ~/.config/hypr/hyprland.lua"
 alias bashfig="vim ~/.bashrc"
 alias paperfig="vim ~/.config/hypr/hyprpaper.conf"
-alias stacksync="~/AppImages/cursor ~/stacksync"
+alias stacksync="cursor ~/stacksync"
 alias scratch='vim ~/scratch.txt'
 
 alias pls="sudo"

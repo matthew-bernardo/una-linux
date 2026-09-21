@@ -39,6 +39,7 @@ button-label-weight = "normal"
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
+center = []
 right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "custom-rec", "systray"]
 
 [[modules.custom]]
