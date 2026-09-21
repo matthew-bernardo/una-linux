@@ -1,7 +1,8 @@
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
-plugins=(git)
+plugins=(git vi-mode)
 source "$ZSH/oh-my-zsh.sh"
+KEYTIMEOUT=1
 
 [[ -f "$HOME/.una/aliases.sh" ]] && source "$HOME/.una/aliases.sh" >/dev/null
 [[ -f "$HOME/.una/functions.sh" ]] && source "$HOME/.una/functions.sh" >/dev/null
