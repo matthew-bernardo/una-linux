@@ -72,8 +72,8 @@ hl.config({
     },
     blur = {
       enabled = true,
-      size = 3,
-      passes = 1,
+      size = 4,
+      passes = 2,
       vibrancy = 0.1696,
     },
   },
@@ -158,6 +158,16 @@ hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "a
 hl.layer_rule({
   match = { namespace = "wofi" },
   no_anim = true,
+})
+
+-- Wayle menus are GTK popovers on the bar layer. The bar itself is
+-- fully opaque, so blur = true does not glass the bar — it only lets
+-- Hyprland blur those popovers. blur_popups alone is not enough.
+hl.layer_rule({
+  match = { namespace = "wayle-bar-.*" },
+  blur = true,
+  blur_popups = true,
+  ignore_alpha = 0.5,
 })
 
 -- Smart gaps / no gaps when only

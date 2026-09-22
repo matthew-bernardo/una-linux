@@ -46,3 +46,39 @@ button,
 .custom.rec-active .bar-button-label {
   color: #ffffff;
 }
+
+.dropdown {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dropdown-header,
+.dropdown-footer {
+  background-color: transparent;
+}
+
+/* Wayle reapplies widget margins in code on each open; !important
+   is required to beat gtk_widget_set_margin_*. */
+popover.background.dropdown {
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+popover.background.dropdown > arrow {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+popover.background.dropdown > contents {
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+popover.background.dropdown > contents > .dropdown {
+  margin: 0 !important;
+}

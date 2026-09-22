@@ -31,6 +31,7 @@ bg = "#000000"
 background-opacity = 100
 rounding = "none"
 shadow = "none"
+dropdown-shadow = false
 button-variant = "basic"
 button-rounding = "99999px"
 button-border-location = "none"

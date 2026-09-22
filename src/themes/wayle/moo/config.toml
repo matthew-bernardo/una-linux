@@ -31,6 +31,7 @@ bg = "#ffffff"
 background-opacity = 100
 rounding = "none"
 shadow = "none"
+dropdown-shadow = false
 button-rounding = "4px"
 button-label-weight = "normal"
 
