@@ -11,3 +11,5 @@ user_packages:
   - nodejs
   - python3.11
   - gedit
+  - fastfetch
+
