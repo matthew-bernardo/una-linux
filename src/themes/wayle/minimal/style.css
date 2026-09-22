@@ -99,12 +99,3 @@ menubutton.bar-button .icon-container image {
 .custom.rec-active .bar-button-label {
   color: #f7768e;
 }
-
-.dropdown {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.dropdown-header,
-.dropdown-footer {
-  background-color: transparent;
-}

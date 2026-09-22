@@ -46,12 +46,3 @@ button,
 .custom.rec-active .bar-button-label {
   color: #ffffff;
 }
-
-.dropdown {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.dropdown-header,
-.dropdown-footer {
-  background-color: transparent;
-}

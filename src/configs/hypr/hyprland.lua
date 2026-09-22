@@ -72,7 +72,7 @@ hl.config({
     },
     blur = {
       enabled = true,
-      size = 4,
+      size = 3,
       passes = 1,
       vibrancy = 0.1696,
     },
@@ -158,13 +158,6 @@ hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "a
 hl.layer_rule({
   match = { namespace = "wofi" },
   no_anim = true,
-})
-
--- Wayle dropdowns are GTK popovers on the bar layer. Blur those popups
--- without blurring the bar itself.
-hl.layer_rule({
-  match = { namespace = "^wayle-bar-" },
-  blur_popups = true,
 })
 
 -- Smart gaps / no gaps when only
