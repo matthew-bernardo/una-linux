@@ -1,6 +1,6 @@
-# Wofi. style.css is the live theme (tokyo-night by default).
-# `toggleTerminalTheme` copies themes/tokyo-light.css or tokyo-night.css over it
-# so wofi stays in sync with kitty.
+# Wofi. ONLY style.css is loaded at runtime (not themes/*).
+# Edit style.css, then: cp ~/.una/una-linux/src/configs/wofi/style.css ~/.config/wofi/style.css
+# themes/minimal.css is a backup copy of that look; tokyo-* are for toggleTerminalTheme.
 allow_images=true
 allow_markup=true
 hide_scroll=true
@@ -11,5 +11,6 @@ matching=fuzzy
 no_actions=true
 orientation=vertical
 prompt=Search
-width=30%
-lines=12
+# Same aspect ratio as the screen (equal % of both axes).
+width=50%
+height=50%

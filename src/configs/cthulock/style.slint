@@ -1,0 +1,95 @@
+// Cthulock lock screen. Copied to ~/.config/cthulock/style.slint.
+// Adapted from configs/hypr/hyprlock.conf — Slint gives real animations.
+// Test with: labwc -s "cthulock --no-fallback"
+// Docs: https://github.com/FriederHannenheim/cthulock/blob/master/docs/configuration.md
+
+import { LineEdit } from "std-widgets.slint";
+
+export component LockScreen inherits Window {
+    in property <bool> checking_password;
+    in property <string> clock_text;
+    in-out property <string> password <=> password.text;
+    // Rust handler expects submit(password); don't alias accepted directly.
+    callback submit(string);
+    forward-focus: password;
+
+    property <string> font-name: "VCR OSD Mono";
+    // Hardcoded from print_una_header.sh --cat (Cthulock has no cmd labels).
+    property <string> cat-art: " _._     _,-'\"\"`-._\n(,-.`._,'(       |\\`-/|\n    `-.-' \\ )-`( , o o)\n          `-    \\`_`\"'-";
+
+    states [
+        checking when checking-password: {
+            password.enabled: false;
+        }
+    ]
+
+    // Soft fade-in — swap this for whatever motion you actually want.
+    property <bool> ready: false;
+    opacity: ready ? 1 : 0;
+    animate opacity { duration: 450ms; easing: ease-out; }
+    init => {
+        ready = true;
+    }
+
+    background: #111111;
+
+    Image {
+        width: 100%;
+        height: 100%;
+        source: @image-url("/home/mbernardo/Pictures/medieval-bw.png");
+        image-fit: cover;
+    }
+
+    // Bottom panel ≈ hyprlock shape (1000×420, 70px from bottom).
+    Rectangle {
+        width: 1000px;
+        height: 420px;
+        x: (parent.width - self.width) / 2;
+        y: parent.height - self.height - 70px;
+        background: #000000;
+        border-width: 2px;
+        border-color: #ffffff;
+        border-radius: 10px;
+
+        VerticalLayout {
+            padding-left: 50px;
+            padding-right: 50px;
+            padding-top: 24px;
+            padding-bottom: 24px;
+            spacing: 12px;
+
+            Text {
+                text: cat-art;
+                color: #ffffff;
+                font-size: 24px;
+                font-family: font-name;
+                font-weight: 400;
+                horizontal-alignment: left;
+                wrap: no-wrap;
+            }
+
+            Text {
+                text: clock_text;
+                color: #ffffff;
+                font-size: 100px;
+                font-family: font-name;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                vertical-stretch: 1;
+            }
+
+            password := LineEdit {
+                height: 70px;
+                enabled: true;
+                font-size: 28px;
+                font-family: font-name;
+                horizontal-alignment: left;
+                input-type: password;
+                placeholder-text: "Password";
+                accepted => {
+                    root.submit(self.text);
+                }
+            }
+        }
+    }
+}

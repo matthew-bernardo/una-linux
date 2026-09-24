@@ -155,8 +155,11 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 1.94, bezier = "almo
 hl.animation({ leaf = "workspacesIn", enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
 
+-- Semi-transparent wofi CSS (rgba) + blur = glass. no_anim avoids open flicker.
 hl.layer_rule({
   match = { namespace = "wofi" },
+  blur = true,
+  ignore_alpha = 0.5,
   no_anim = true,
 })
 
