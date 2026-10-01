@@ -223,6 +223,9 @@ for i = 1, 10 do
   hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
+-- Last workspace; a second press returns, so 1 → 3 → Super+Tab toggles 1 and 3.
+hl.bind(mainMod .. " + Tab", hl.dsp.focus({ workspace = "previous" }))
+
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
