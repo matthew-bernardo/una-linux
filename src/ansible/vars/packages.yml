@@ -7,6 +7,7 @@ user_packages:
   - wl-clipboard
   - grim
   - slurp
+  - wf-recorder
   - awscli2
   - nodejs
   - python3.11
