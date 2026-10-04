@@ -27,11 +27,19 @@ local mainMod = "SUPER"
 -------------------
 
 hl.on("hyprland.start", function()
+  -- Chromium (and other portal clients) need graphical-session.target; tty
+  -- Hyprland never starts it, so xdg-desktop-portal fails with "dependency".
+  hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE")
+  hl.exec_cmd("systemctl --user start hyprland-session.service")
   hl.exec_cmd(startPanel)
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
   -- So GTK/portal apps pick up dark mode
   hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
+end)
+
+hl.on("hyprland.shutdown", function()
+  hl.exec_cmd("systemctl --user stop hyprland-session.service")
 end)
 
 -------------------------------

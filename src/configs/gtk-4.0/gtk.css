@@ -1,0 +1,128 @@
+/* Minimal black and white for every GTK 4 app.
+   Matches configs/wofi/themes/minimal.css: black, white, #333333.
+   GTK loads this from ~/.config/gtk-4.0/gtk.css.
+
+   VCR OSD Mono is Regular-only. A bold or italic weight makes GTK
+   substitute another face, so the UI stays at normal weight. */
+
+@define-color window_bg_color #000000;
+@define-color window_fg_color #ffffff;
+@define-color view_bg_color #000000;
+@define-color view_fg_color #ffffff;
+@define-color dialog_bg_color #000000;
+@define-color dialog_fg_color #ffffff;
+@define-color headerbar_bg_color #000000;
+@define-color headerbar_fg_color #ffffff;
+@define-color headerbar_border_color #333333;
+@define-color headerbar_backdrop_color #000000;
+@define-color sidebar_bg_color #000000;
+@define-color sidebar_fg_color #ffffff;
+@define-color sidebar_backdrop_color #000000;
+@define-color sidebar_border_color #333333;
+@define-color secondary_sidebar_bg_color #000000;
+@define-color secondary_sidebar_fg_color #ffffff;
+@define-color secondary_sidebar_backdrop_color #000000;
+@define-color secondary_sidebar_border_color #333333;
+@define-color card_bg_color #000000;
+@define-color card_fg_color #ffffff;
+@define-color popover_bg_color #000000;
+@define-color popover_fg_color #ffffff;
+@define-color thumbnail_bg_color #000000;
+@define-color thumbnail_fg_color #ffffff;
+@define-color accent_bg_color #ffffff;
+@define-color accent_fg_color #000000;
+@define-color accent_color #ffffff;
+@define-color destructive_bg_color #333333;
+@define-color destructive_fg_color #ffffff;
+@define-color destructive_color #ffffff;
+@define-color success_bg_color #ffffff;
+@define-color success_fg_color #000000;
+@define-color success_color #ffffff;
+@define-color warning_bg_color #cccccc;
+@define-color warning_fg_color #000000;
+@define-color warning_color #cccccc;
+@define-color error_bg_color #ffffff;
+@define-color error_fg_color #000000;
+@define-color error_color #ffffff;
+@define-color theme_bg_color #000000;
+@define-color theme_fg_color #ffffff;
+@define-color theme_base_color #000000;
+@define-color theme_text_color #ffffff;
+@define-color theme_selected_bg_color #ffffff;
+@define-color theme_selected_fg_color #000000;
+@define-color theme_unfocused_bg_color #000000;
+@define-color theme_unfocused_fg_color #ffffff;
+@define-color theme_unfocused_base_color #000000;
+@define-color theme_unfocused_text_color #ffffff;
+@define-color theme_unfocused_selected_bg_color #ffffff;
+@define-color theme_unfocused_selected_fg_color #000000;
+@define-color insensitive_bg_color #000000;
+@define-color insensitive_fg_color #666666;
+@define-color insensitive_base_color #000000;
+@define-color borders #333333;
+@define-color unfocused_borders #333333;
+
+:root {
+  --window-bg-color: #000000;
+  --window-fg-color: #ffffff;
+  --view-bg-color: #000000;
+  --view-fg-color: #ffffff;
+  --dialog-bg-color: #000000;
+  --dialog-fg-color: #ffffff;
+  --headerbar-bg-color: #000000;
+  --headerbar-fg-color: #ffffff;
+  --headerbar-border-color: #333333;
+  --headerbar-backdrop-color: #000000;
+  --headerbar-shade-color: transparent;
+  --headerbar-darker-shade-color: transparent;
+  --sidebar-bg-color: #000000;
+  --sidebar-fg-color: #ffffff;
+  --sidebar-backdrop-color: #000000;
+  --sidebar-border-color: #333333;
+  --sidebar-shade-color: transparent;
+  --secondary-sidebar-bg-color: #000000;
+  --secondary-sidebar-fg-color: #ffffff;
+  --secondary-sidebar-backdrop-color: #000000;
+  --secondary-sidebar-border-color: #333333;
+  --secondary-sidebar-shade-color: transparent;
+  --card-bg-color: #000000;
+  --card-fg-color: #ffffff;
+  --card-shade-color: transparent;
+  --popover-bg-color: #000000;
+  --popover-fg-color: #ffffff;
+  --popover-shade-color: transparent;
+  --thumbnail-bg-color: #000000;
+  --thumbnail-fg-color: #ffffff;
+  --accent-bg-color: #ffffff;
+  --accent-fg-color: #000000;
+  --accent-color: #ffffff;
+  --destructive-bg-color: #333333;
+  --destructive-fg-color: #ffffff;
+  --destructive-color: #ffffff;
+  --success-bg-color: #ffffff;
+  --success-fg-color: #000000;
+  --success-color: #ffffff;
+  --warning-bg-color: #cccccc;
+  --warning-fg-color: #000000;
+  --warning-color: #cccccc;
+  --error-bg-color: #ffffff;
+  --error-fg-color: #000000;
+  --error-color: #ffffff;
+  --border-color: #333333;
+  --overview-bg-color: #000000;
+  --overview-fg-color: #ffffff;
+  --active-toggle-bg-color: #ffffff;
+  --active-toggle-fg-color: #000000;
+}
+
+window,
+window * {
+  font-family: "VCR OSD Mono";
+  font-weight: normal;
+  font-style: normal;
+}
+
+window.messagedialog,
+window.dialog {
+  box-shadow: inset 0 0 0 1px #333333;
+}

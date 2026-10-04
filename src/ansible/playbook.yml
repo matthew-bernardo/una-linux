@@ -47,6 +47,7 @@
           - hyprland
           - hyprland-guiutils
           - xdg-desktop-portal-hyprland
+          - xdg-desktop-portal-gtk
           - hyprlock
           - hypridle
           - hyprpaper
@@ -66,6 +67,31 @@
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/../configs/hypr/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/hypr/"
+
+    - name: Copy desktop portal config
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/xdg-desktop-portal/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/xdg-desktop-portal/"
+
+    - name: Ensure systemd user unit directory exists
+      tags: [hyprland]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Hyprland session unit
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/systemd/user/hyprland-session.service"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/hyprland-session.service"
+
+    - name: Reload systemd user units
+      tags: [hyprland]
+      ansible.builtin.systemd:
+        scope: user
+        daemon_reload: true
 
     - name: Copy kitty config and themes
       tags: [hyprland]
@@ -330,3 +356,56 @@
         name: "{{ user_packages }}"
         state: present
       when: user_packages | length > 0
+
+    - name: Ensure gedit style directory exists
+      tags: [packages]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.local/share/libgedit-gtksourceview-300/styles"
+        state: directory
+        mode: "0755"
+
+    - name: Copy gedit minimal style scheme
+      tags: [packages]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/gedit/minimal.xml"
+        dest: "{{ ansible_facts['user_dir'] }}/.local/share/libgedit-gtksourceview-300/styles/minimal.xml"
+
+    - name: Use the minimal gedit color scheme
+      tags: [packages]
+      ansible.builtin.command:
+        argv:
+          - gsettings
+          - set
+          - "{{ item.schema }}"
+          - "{{ item.key }}"
+          - "{{ item.value }}"
+      loop:
+        - schema: org.gnome.gedit.preferences.ui
+          key: theme-variant
+          value: dark
+        - schema: org.gnome.gedit.preferences.editor
+          key: style-scheme-for-dark-theme-variant
+          value: minimal
+        - schema: org.gnome.gedit.preferences.editor
+          key: style-scheme-for-light-theme-variant
+          value: minimal
+        - schema: org.gnome.gedit.preferences.editor
+          key: use-default-font
+          value: "false"
+        - schema: org.gnome.gedit.preferences.editor
+          key: editor-font
+          value: VCR OSD Mono 14
+      changed_when: false
+
+    - name: Ensure GTK 4 config directory exists
+      tags: [packages]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/gtk-4.0"
+        state: directory
+        mode: "0755"
+
+    - name: Copy GTK 4 minimal theme
+      tags: [packages]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/gtk-4.0/gtk.css"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/gtk-4.0/gtk.css"

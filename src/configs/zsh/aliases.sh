@@ -21,4 +21,5 @@ alias teardownchat="~/stacksync/bin/run_chat_env.sh --teardown"
 alias yz='kitty yazi'
 alias unafig='cursor ~/.una/una-linux'
 alias juna='cd ~/.una/una-linux'
+alias screcwa='wayle_rec convert'
 alias fixchromium="rm ~/.config/chromium/Singleton*"

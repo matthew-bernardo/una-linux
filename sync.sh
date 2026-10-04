@@ -99,6 +99,9 @@ declare -A FILE_MAP=(
   [zsh/run_aliases.sh]="${HOME}/.config/una/bin/run_aliases.sh"
   [una/una]="${HOME}/.config/una/bin/una"
   [una/wayle_rec]="${HOME}/.config/una/bin/wayle_rec"
+  [systemd/user/hyprland-session.service]="${HOME}/.config/systemd/user/hyprland-session.service"
+  [gedit/minimal.xml]="${HOME}/.local/share/libgedit-gtksourceview-300/styles/minimal.xml"
+  [gtk-4.0/gtk.css]="${HOME}/.config/gtk-4.0/gtk.css"
 )
 
 # configs/<name>/ → live directory (contents, not themes)
@@ -106,6 +109,7 @@ declare -A DIR_MAP=(
   [hypr]="${HOME}/.config/hypr"
   [kitty]="${HOME}/.config/kitty"
   [wofi]="${HOME}/.config/wofi"
+  [xdg-desktop-portal]="${HOME}/.config/xdg-desktop-portal"
 )
 
 should_skip() {

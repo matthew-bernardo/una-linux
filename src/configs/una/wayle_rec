@@ -15,7 +15,7 @@ POLL_SEC=0.1
 RECORDER_BIN="${WAYLE_REC_RECORDER:-wf-recorder}"
 
 usage() {
-  echo "usage: wayle_rec [status|watch|toggle]" >&2
+  echo "usage: wayle_rec [status|watch|toggle|convert FILE...]" >&2
   exit 2
 }
 
@@ -91,6 +91,139 @@ notify_error() {
   if command -v notify-send >/dev/null 2>&1; then
     notify-send --app-name=wayle-rec "Recording failed" "${message}" || true
   fi
+}
+
+whatsapp_output_path() {
+  local src="$1"
+  local dir base
+  dir="$(dirname "${src}")"
+  base="$(basename "${src}")"
+  base="${base%.*}"
+  if [[ "${base}" == *-wa ]]; then
+    printf '%s/%s.mp4' "${dir}" "${base}"
+  else
+    printf '%s/%s-wa.mp4' "${dir}" "${base}"
+  fi
+}
+
+recording_has_audio() {
+  local src="$1"
+  command -v ffprobe >/dev/null 2>&1 || return 1
+  [[ -n "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_type -of csv=p=0 "${src}" 2>/dev/null || true)" ]]
+}
+
+convert_one() {
+  local src dest
+  src="$(realpath -e "$1")"
+  dest="$(whatsapp_output_path "${src}")"
+
+  if ! command -v ffmpeg >/dev/null 2>&1; then
+    echo "error: ffmpeg is not on PATH" >&2
+    return 1
+  fi
+
+  local -a audio_args
+  if recording_has_audio "${src}"; then
+    # Downmix every input channel to mono, then duplicate to stereo so
+    # WhatsApp and headphones get the mic on both sides.
+    audio_args=(
+      -map 0:a:0
+      -c:a aac
+      -b:a 128k
+      -ar 44100
+      -af "aformat=channel_layouts=mono,aformat=channel_layouts=stereo"
+    )
+  else
+    audio_args=(-an)
+  fi
+
+  printf 'converting %s → %s\n' "$(basename "${src}")" "$(basename "${dest}")" >&2
+
+  local partial="${dest}.partial.mp4"
+  rm -f "${partial}"
+  local -a ffmpeg_cmd=(
+    ffmpeg -hide_banner -nostdin -loglevel warning -stats -y
+    -i "${src}"
+    -map 0:v:0
+    "${audio_args[@]}"
+    -vf "scale=-2:'min(1080,ih)',format=yuv420p,fps=30"
+    -r 30
+    -c:v libx264
+    -profile:v main
+    -level 4.0
+    -pix_fmt yuv420p
+    -preset medium
+    -crf 23
+    -colorspace bt709
+    -color_primaries bt709
+    -color_trc bt709
+    -color_range tv
+    -movflags +faststart
+    "${partial}"
+  )
+  if ! "${ffmpeg_cmd[@]}"; then
+    echo "error: ffmpeg failed" >&2
+    rm -f "${partial}"
+    return 1
+  fi
+
+  if ! ffprobe -v error -show_entries format=duration -of csv=p=0 "${partial}" >/dev/null; then
+    echo "error: converted file is not a valid mp4" >&2
+    rm -f "${partial}"
+    return 1
+  fi
+  mv -f "${partial}" "${dest}"
+
+  printf 'wrote %s\n' "${dest}"
+  ffprobe -hide_banner "${dest}" 2>&1 | grep -E 'Duration|Video:|Audio:' >&2 || true
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send --app-name=wayle-rec "WhatsApp copy ready" "${dest}" || true
+  fi
+}
+
+pick_recording() {
+  local dir
+  dir="$(recordings_dir)"
+  [[ -d "${dir}" ]] || return 1
+
+  local -a files=()
+  local f
+  while IFS= read -r f; do
+    [[ -n "${f}" ]] || continue
+    files+=("${f}")
+  done < <(find "${dir}" -maxdepth 1 -type f -name '*.mp4' ! -name '*-wa.mp4' | LC_ALL=C sort)
+
+  ((${#files[@]})) || return 1
+
+  if ! command -v wofi >/dev/null 2>&1; then
+    printf '%s\n' "${files[-1]}"
+    return 0
+  fi
+
+  local labels=() choice
+  for f in "${files[@]}"; do
+    labels+=("$(basename "${f}")")
+  done
+  choice="$(printf '%s\n' "${labels[@]}" | wofi --dmenu --prompt "Convert for WhatsApp")" || return 1
+  [[ -n "${choice}" ]] || return 1
+  printf '%s/%s\n' "${dir}" "${choice}"
+}
+
+cmd_convert() {
+  local -a inputs=("$@")
+  if ((${#inputs[@]} == 0)); then
+    local picked
+    picked="$(pick_recording)" || {
+      echo "error: no recording selected (pass a file or record one first)" >&2
+      return 1
+    }
+    inputs=("${picked}")
+  fi
+
+  local src
+  for src in "${inputs[@]}"; do
+    convert_one "${src}"
+  done
 }
 
 recorder_pid() {
@@ -358,6 +491,10 @@ case "${1:-status}" in
   status) cmd_status ;;
   watch) cmd_watch ;;
   toggle) cmd_toggle ;;
+  convert)
+    shift
+    cmd_convert "$@"
+    ;;
   -h | --help | help) usage ;;
   *) usage ;;
 esac
