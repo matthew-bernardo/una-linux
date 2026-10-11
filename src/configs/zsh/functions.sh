@@ -89,58 +89,6 @@ notify() {
 }
 
 
-nix_clean() {
-  # Defaults
-  local keep=3
-  local auto=false
-
-  # Parse args
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      -y|--yes)
-        auto=true
-        ;;
-      -k|--keep)
-        keep="$2"
-        shift
-        ;;
-      *)
-        echo "Unknown option: $1"
-        echo "Usage: nix_clean [-y|--yes] [-k|--keep N]"
-        return 1
-        ;;
-    esac
-    shift
-  done
-
-  # Interactive prompt if not auto
-  if [[ "$auto" != true ]]; then
-    echo -e "\033[1;33mThis will delete all but the most recent system generations and perform a full garbage collection.\033[0m"
-    echo "Current default: keep last $keep generations."
-
-    read -rp "How many generations would you like to keep? [$keep]: " input_keep
-    if [[ -n "$input_keep" ]]; then
-      if [[ "$input_keep" =~ ^[0-9]+$ && "$input_keep" -ge 2 ]]; then
-        keep="$input_keep"
-      else
-        echo "⚠️  Invalid number (must be >= 2). Keeping $keep."
-      fi
-    fi
-
-    echo -e "\nThis will run:"
-    echo "  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system --keep $keep"
-    echo "  sudo nix-collect-garbage -d"
-    read -rp "Continue? [y/N] " confirm
-    [[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return 0; }
-  fi
-
-  # Run commands
-  echo -e "\033[1;34m→ Keeping $keep generations and cleaning...\033[0m"
-  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system --keep "$keep"
-  sudo nix-collect-garbage -d
-  echo -e "\033[1;32m✔ Done!\033[0m"
-}
-
 # Add to your ~/.bashrc or ~/.zshrc
 set_cursor() {
   # Usage: set_cursor [THEME] [SIZE]
