@@ -1,7 +1,6 @@
 alias zalias="vim ~/.una/aliases.sh"
 alias zfun="vim ~/.una/functions.sh"
 alias zfresh="source ~/.una/aliases.sh; source ~/.una/functions.sh" 
-alias nixfig="sudo vim /etc/nixos/configuration.nix"
 alias hyprfig="vim ~/.config/hypr/hyprland.lua"
 alias bashfig="vim ~/.bashrc"
 alias paperfig="vim ~/.config/hypr/hyprpaper.conf"
@@ -13,10 +12,6 @@ alias pls\?='eval "sudo $(fc -ln -1)"'
 alias gco="git checkout"
 alias grb="git rebase"
 alias glog="git log --oneline --graph"
-
-alias dolphin="OLLAMA_NOHISTORY=1 ollama run dolphin3"
-alias runchat="~/stacksync/bin/run_chat_env.sh"
-alias teardownchat="~/stacksync/bin/run_chat_env.sh --teardown"
 
 alias yz='kitty yazi'
 alias unafig='cursor ~/.una/una-linux'
