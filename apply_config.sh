@@ -19,12 +19,19 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" --sudo install_ansible "${SCRIPTS}/install_ansible.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_fonts "${SCRIPTS}/install_fonts.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_shell "${SCRIPTS}/install_shell.sh"
+# Interactive when Hyprland is installed from a different repository than
+# lionheartp/Hyprland, or another Hyprland COPR is enabled. Needs a TTY
+# (not wrapped in run_step). `s` skips this run; `n` records a permanent
+# skip in .una_asahi_setup.json.
+"${SCRIPTS}/ensure_hyprland_source.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_window_manager "${SCRIPTS}/install_window_manager.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_wayle "${SCRIPTS}/install_wayle.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_clamav "${SCRIPTS}/install_clamav.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_packages "${SCRIPTS}/install_packages.sh"
 "${SCRIPTS}/run_step.sh" --sudo configure_hid_apple "${SCRIPTS}/configure_hid_apple.sh"
 "${SCRIPTS}/run_step.sh" --sudo configure_notch "${SCRIPTS}/configure_notch.sh"
+# Not a milestone: a wedged portal is runtime state, so every apply restarts it.
+"${SCRIPTS}/restart_desktop_portals.sh"
 
 "${SCRIPTS}/print_una_header.sh"
 echo "✨ una: config applied successfully"

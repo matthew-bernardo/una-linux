@@ -44,13 +44,15 @@
       become: true
       ansible.builtin.dnf:
         name:
+          # Expected from lionheartp/Hyprland. Keep in sync with STACK in
+          # src/scripts/ensure_hyprland_source.sh.
           - hyprland
           - hyprland-guiutils
           - xdg-desktop-portal-hyprland
-          - xdg-desktop-portal-gtk
           - hyprlock
           - hypridle
           - hyprpaper
+          - xdg-desktop-portal-gtk
           - kitty
           - yazi
           - wofi

@@ -26,6 +26,10 @@ That script currently has these install milestones:
 
 Hyprland, Wayle, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
+Before that Hyprland install, `ensure_hyprland_source.sh` checks the packages already on the machine. If `hyprland`, `hyprland-guiutils`, `xdg-desktop-portal-hyprland`, `hyprlock`, `hypridle`, or `hyprpaper` came from a repository other than `lionheartp/Hyprland`, or any installed package came from another Hyprland COPR, or another Hyprland COPR is enabled, it lists them and asks before continuing. `y` disables those COPRs and reinstalls the stack from `lionheartp/Hyprland`. `s` leaves the current install for this run. `n` records `ensure_hyprland_source` in `permanently_skipped`.
+
+After those milestones, every apply restarts the user services `xdg-desktop-portal-hyprland` and `xdg-desktop-portal`. A screencast can leave the Hyprland portal wedged (the source picker still opens, but no video stream starts) until both are restarted. This is not a milestone, so it still runs when the other steps are skipped. If there is no systemd user session, or the units are not installed, it leaves them alone.
+
 Privileged milestones prompt for sudo on the terminal *before* the spinner starts, then keep a cached ticket so Ansible `become` can run `sudo -n`. That also writes `Defaults timestamp_type=global` to `/etc/sudoers.d/una-setup` so the ticket works without a tty.
 
 ## Disk encryption
@@ -83,6 +87,7 @@ scripts/
   run_step.sh
   install_ansible.sh
   install_window_manager.sh
+  ensure_hyprland_source.sh   # ask before replacing a Hyprland install from another repo
   install_fonts.sh
   install_wayle.sh
   load_theme.sh
@@ -93,6 +98,7 @@ scripts/
   install_packages.sh
   configure_hid_apple.sh
   configure_notch.sh
+  restart_desktop_portals.sh  # restart user screen-share portals on every apply
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
 configs/una/                    # una CLI, start_panel launcher, wayle_rec module helper
