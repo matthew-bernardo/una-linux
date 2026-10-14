@@ -53,6 +53,9 @@ ${BOLD}${MAGENTA}una${RESET}  ${DIM}·${RESET}  commands from this checkout
   ${CYAN}una load_theme${RESET} <theme>
       Load a Wayle theme (config.toml) from the checkout
 
+  ${CYAN}una export theme${RESET} <name>
+      Save the live Wayle config as a new theme in the checkout
+
 Set ${BOLD}UNA_ROOT${RESET} if the checkout is not at ~/.una/una-linux
 EOF
 }
@@ -79,9 +82,27 @@ case "${cmd}" in
   load_theme | theme)
     exec "${ROOT}/src/scripts/load_theme.sh" "$@"
     ;;
+  export)
+    kind="${1:-}"
+    if [[ -z "${kind}" ]]; then
+      echo "Usage: una export theme <name>" >&2
+      exit 2
+    fi
+    shift
+    case "${kind}" in
+      theme)
+        exec "${ROOT}/src/scripts/export_theme.sh" "$@"
+        ;;
+      *)
+        echo "unknown export: ${kind}" >&2
+        echo "try: una export theme <name>" >&2
+        exit 2
+        ;;
+    esac
+    ;;
   *)
     echo "unknown command: ${cmd}" >&2
-    echo "try: una apply  ·  una sync  ·  una load_theme" >&2
+    echo "try: una apply  ·  una sync  ·  una load_theme  ·  una export theme" >&2
     exit 2
     ;;
 esac

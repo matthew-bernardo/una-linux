@@ -17,7 +17,7 @@ That script currently has these install milestones:
 3. Install `ansible-core` if `ansible-playbook` is missing
 4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` and `configs/wofi` to `~/.config/wofi` (tokyo-night / tokyo-light; `toggleTerminalTheme` switches both).
 5. Install Noto Color Emoji and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
-6. Install Wayle from source and copy the current Wayle theme's `config.toml` (`una load_theme`; name stored in `.una_asahi_setup.json`). Hyprland autostarts `~/.config/una/bin/start_panel`. Themes: `cmyk-dark`, `cmyk-light`, `minimal`, `moo`, `moo-dark`, `windows95`.
+6. Install Wayle from source and copy the current Wayle theme's `config.toml` (`una load_theme`; name stored in `.una_asahi_setup.json`). `una export theme <name>` saves the live Wayle config and styles as a new theme in this checkout. Hyprland autostarts `~/.config/una/bin/start_panel`. Themes: `cmyk-dark`, `cmyk-light`, `minimal`, `moo`, `moo-dark`, `windows95`.
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
 9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
@@ -91,6 +91,7 @@ scripts/
   install_fonts.sh
   install_wayle.sh
   load_theme.sh
+  export_theme.sh             # una export theme: live Wayle config → themes/wayle/<name>
   install_shell.sh
   install_clamav.sh
   check_disk_encryption.sh
@@ -107,7 +108,7 @@ configs/wofi/                   # wofi config + tokyo-night/light CSS copied to 
 configs/zsh/zshrc               # zshrc to copy
 configs/zsh/aliases.sh          # copied to ~/.una/aliases.sh
 configs/zsh/functions.sh        # copied to ~/.una/functions.sh
-themes/wayle/<name>/config.toml # Wayle theme; `una load_theme` copies to ~/.config/wayle
-themes/wayle/<name>/style.css   # copied to ~/.config/wayle/styles/index.scss
+themes/wayle/<name>/config.toml # Wayle theme; `una load_theme` copies it out, `una export theme` writes it back
+themes/wayle/<name>/style.css   # load copies to ~/.config/wayle/styles/index.scss; export writes it back
 themes/fonts/                   # copied to ~/.local/share/fonts/una
 ```
