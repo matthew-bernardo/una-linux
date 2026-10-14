@@ -4,6 +4,8 @@
 # Bar height is not a config field (padding + button size + scale). Use
 # ~/.config/wayle/styles/index.scss if you need an exact pixel height.
 
+# FatPixelFont.ttf registers as BigBoldPixel. Its glyphs are about 2.7×
+# the cap height of VCR OSD Mono, so the label scales below are 0.35.
 [general]
 font-sans = "BigBoldPixel"
 font-mono = "BigBoldPixel"
@@ -33,7 +35,7 @@ rounding = "none"
 shadow = "none"
 dropdown-shadow = false
 button-rounding = "4px"
-button-label-size = 0.5
+button-label-size = 0.35
 button-label-weight = "normal"
 
 [[bar.layout]]
@@ -58,7 +60,7 @@ min-workspace-count = 0
 monitor-specific = false
 show-special = false
 active-indicator = "background"
-label-size = 0.5
+label-size = 0.35
 active-color = "#c0c0c0"
 occupied-color = "#dedede"
 container-bg-color = "#000000"

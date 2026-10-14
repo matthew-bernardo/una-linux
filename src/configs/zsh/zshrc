@@ -20,5 +20,7 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$HOME/.deno/bin:$PATH"
 
 export EDITOR="vim"
+# cursor (default) or code. Override in ~/.zshrc.local.
+export PREFERRED_IDE="${PREFERRED_IDE:-cursor}"
 
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

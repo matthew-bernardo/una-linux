@@ -4,7 +4,7 @@ alias zfresh="source ~/.una/aliases.sh; source ~/.una/functions.sh"
 alias hyprfig="vim ~/.config/hypr/hyprland.lua"
 alias bashfig="vim ~/.bashrc"
 alias paperfig="vim ~/.config/hypr/hyprpaper.conf"
-alias stacksync="cursor ~/stacksync"
+alias stacksync='open_in_ide ~/stacksync'
 alias scratch='vim ~/scratch.txt'
 
 alias pls="sudo"
@@ -14,7 +14,7 @@ alias grb="git rebase"
 alias glog="git log --oneline --graph"
 
 alias yz='kitty yazi'
-alias unafig='cursor ~/.una/una-linux'
+alias unafig='open_in_ide ~/.una/una-linux'
 alias juna='cd ~/.una/una-linux'
 alias screcwa='wayle_rec convert'
 alias fixchromium="rm ~/.config/chromium/Singleton*"

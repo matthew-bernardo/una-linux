@@ -4,9 +4,11 @@
 # Bar height is not a config field (padding + button size + scale). Use
 # ~/.config/wayle/styles/index.scss if you need an exact pixel height.
 
+# FatPixelFont.ttf registers as BigBoldPixel. Its glyphs are about 2.7×
+# the cap height of VCR OSD Mono, so the label scales below are 0.35.
 [general]
-font-sans = "VCR OSD Mono"
-font-mono = "VCR OSD Mono"
+font-sans = "BigBoldPixel"
+font-mono = "BigBoldPixel"
 
 [styling]
 theme-provider = "wayle"
@@ -32,13 +34,17 @@ background-opacity = 100
 rounding = "none"
 shadow = "none"
 dropdown-shadow = false
+button-variant = "basic"
 button-rounding = "4px"
+button-border-location = "none"
+button-label-size = 0.35
 button-label-weight = "normal"
 
 [[bar.layout]]
 monitor = "*"
 left = ["dashboard", "hyprland-workspaces"]
-right = ["custom-rec", "notifications", "volume", "network", "bluetooth", "battery", "clock", "systray"]
+center = []
+right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "custom-rec", "systray"]
 
 [[modules.custom]]
 id = "rec"
@@ -57,6 +63,57 @@ min-workspace-count = 0
 monitor-specific = false
 show-special = false
 active-indicator = "background"
+workspace-padding = 0.85
+label-size = 0.35
 active-color = "#c0c0c0"
 occupied-color = "#000000"
+empty-color = "#000000"
 container-bg-color = "#ffffff"
+
+[modules.dashboard]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+
+[modules.notifications]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[[modules.notifications.thresholds]]
+above = 1
+icon-color = "#f7768e"
+label-color = "#f7768e"
+
+[modules.volume]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[modules.network]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[modules.bluetooth]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[modules.battery]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[modules.clock]
+icon-color = "#000000"
+icon-bg-color = "#ffffff"
+label-color = "#000000"
+button-bg-color = "#ffffff"
+
+[modules.systray]
+button-bg-color = "#ffffff"

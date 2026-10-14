@@ -22,6 +22,23 @@ install_cursor() {
   chmod +x ~/.local/bin/cursor
 }
 
+# PREFERRED_IDE=cursor (default) or code/vscode. Set it in ~/.zshrc.local.
+open_in_ide() {
+  local ide="${PREFERRED_IDE:-cursor}"
+  case "$ide" in
+    cursor)
+      command cursor --classic "$@"
+      ;;
+    code|vscode)
+      command code "$@"
+      ;;
+    *)
+      echo "PREFERRED_IDE must be cursor or code (got: $ide)" >&2
+      return 1
+      ;;
+  esac
+}
+
 # Uses Wofi to prompt the user to pick a repo
 ide() {
   set -o pipefail
@@ -71,8 +88,7 @@ ide() {
   local path="${paths[idx]}"
   [[ -d "$path" ]] || { echo "Selected path not found: $path"; return 1; }
 
-  # Open in background
-  cursor --classic $path
+  open_in_ide "$path"
 }
 
 notify() {
