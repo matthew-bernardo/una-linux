@@ -6,6 +6,8 @@ FUNCTIONS_FILE="${HOME}/.una/functions.sh"
 # Source the files so aliases and functions are available
 source "$ALIASES_FILE"
 source "$FUNCTIONS_FILE"
+# Pick up per-machine overrides (e.g. PREFERRED_IDE) that zsh loads but bash does not
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 shopt -s expand_aliases
 

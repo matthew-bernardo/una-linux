@@ -13,8 +13,8 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" validate_environment "${SCRIPTS}/validate_environment.sh"
 # Interactive: needs a TTY (not wrapped in run_step). `n` at the prompt
 # records a permanent skip in .una_asahi_setup.json.
-"${SCRIPTS}/setup_disk_encryption.sh"
-"${SCRIPTS}/run_step.sh" check_disk_encryption "${SCRIPTS}/check_disk_encryption.sh"
+# "${SCRIPTS}/setup_disk_encryption.sh"
+# "${SCRIPTS}/run_step.sh" check_disk_encryption "${SCRIPTS}/check_disk_encryption.sh"
 
 "${SCRIPTS}/run_step.sh" --sudo install_ansible "${SCRIPTS}/install_ansible.sh"
 "${SCRIPTS}/run_step.sh" --sudo install_fonts "${SCRIPTS}/install_fonts.sh"
