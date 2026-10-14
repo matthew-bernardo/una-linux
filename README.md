@@ -15,8 +15,8 @@ That script currently has these install milestones:
 1. Confirm this is Fedora Asahi Remix
 2. Require LUKS on `/` and `/home` (see [Disk encryption](#disk-encryption))
 3. Install `ansible-core` if `ansible-playbook` is missing
-4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` and `configs/wofi` to `~/.config/wofi` (tokyo-night / tokyo-light; `toggleTerminalTheme` switches both).
-5. Install Noto Color Emoji and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
+4. Install Hyprland and copy `configs/hypr` to `~/.config/hypr` (`hyprland.lua`; hyprlock/hypridle still use `.conf`). Copy `configs/kitty` to `~/.config/kitty` and `configs/wofi` to `~/.config/wofi` (tokyo-night / tokyo-light; `toggleTerminalTheme` switches both). Keyboard layout is macOS British (`gb` / `mac`); fcitx5 + fcitx5-hangul provide Korean (Dubeolsik), toggled with Alt+Space, config in `configs/fcitx5`.
+5. Install Noto Color Emoji, Noto Sans CJK (Korean), and copy theme fonts (`FatPixelFont`, `VCR OSD Mono`) into `~/.local/share/fonts/una`
 6. Install Wayle from source and copy the current Wayle theme's `config.toml` (`una load_theme`; name stored in `.una_asahi_setup.json`). `una export theme <name>` saves the live Wayle config and styles as a new theme in this checkout. Hyprland autostarts `~/.config/una/bin/start_panel`. Themes: `cmyk-dark`, `cmyk-light`, `minimal`, `moo`, `moo-dark`, `windows95`.
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
@@ -104,6 +104,7 @@ ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
 configs/una/                    # una CLI, start_panel launcher, wayle_rec module helper
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
+configs/fcitx5/                 # fcitx5 profile (gb-mac + hangul) copied to ~/.config/fcitx5
 configs/wofi/                   # wofi config + tokyo-night/light CSS copied to ~/.config/wofi
 configs/zsh/zshrc               # zshrc to copy
 configs/zsh/aliases.sh          # copied to ~/.una/aliases.sh

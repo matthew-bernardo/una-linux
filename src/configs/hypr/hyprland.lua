@@ -33,6 +33,8 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("systemctl --user start hyprland-session.service")
   hl.exec_cmd(startPanel)
   hl.exec_cmd("hyprpaper")
+  -- Korean input (Hangul); Alt+Space toggles
+  hl.exec_cmd("fcitx5 -d --replace")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
   -- So GTK/portal apps pick up dark mode
   hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
@@ -48,6 +50,10 @@ end)
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
+-- fcitx5 input method. GTK apps use Wayland text-input, so no GTK_IM_MODULE.
+hl.env("XMODIFIERS", "@im=fcitx")
+hl.env("QT_IM_MODULE", "fcitx")
+hl.env("SDL_IM_MODULE", "fcitx")
 
 -----------------------
 ---- LOOK AND FEEL ----
@@ -107,8 +113,8 @@ hl.config({
   },
 
   input = {
-    kb_layout = "us",
-    kb_variant = "",
+    kb_layout = "gb",
+    kb_variant = "mac",
     kb_model = "",
     kb_options = "",
     kb_rules = "",

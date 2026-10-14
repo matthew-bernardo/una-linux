@@ -107,6 +107,24 @@
         src: "{{ playbook_dir }}/../configs/wofi/"
         dest: "{{ ansible_facts['user_dir'] }}/.config/wofi/"
 
+    - name: Install fcitx5 Korean input
+      tags: [hyprland]
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - fcitx5
+          - fcitx5-hangul
+          - fcitx5-gtk
+          - fcitx5-qt
+          - fcitx5-configtool
+        state: present
+
+    - name: Copy fcitx5 config (UK intl layout + Hangul)
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/fcitx5/"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/fcitx5/"
+
     - name: Remove deprecated hyprland.conf
       tags: [hyprland]
       ansible.builtin.file:
@@ -162,6 +180,7 @@
       ansible.builtin.dnf:
         name:
           - google-noto-color-emoji-fonts
+          - google-noto-sans-cjk-fonts
           - jetbrains-mono-nl-fonts
           - jetbrains-mono-fonts-all
         state: present

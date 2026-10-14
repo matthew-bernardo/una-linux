@@ -27,6 +27,11 @@ milestone="$1"
 step_script="$2"
 shift 2
 
+if "${_ASAHI_SETUP_SCRIPTS_DIR}/is_step_permanently_skipped.sh" "${milestone}"; then
+  echo "Skipping ${milestone} (permanently skipped)"
+  exit 0
+fi
+
 if ! "${_ASAHI_SETUP_SCRIPTS_DIR}/check_if_should_run_step.sh" "${milestone}"; then
   echo "Skipping ${milestone} (already completed for current reflog id)"
   exit 0
