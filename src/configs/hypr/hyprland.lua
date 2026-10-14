@@ -177,15 +177,8 @@ hl.layer_rule({
   no_anim = true,
 })
 
--- Wayle menus are GTK popovers on the bar layer. The bar itself is
--- fully opaque, so blur = true does not glass the bar — it only lets
--- Hyprland blur those popovers. blur_popups alone is not enough.
-hl.layer_rule({
-  match = { namespace = "wayle-bar-.*" },
-  blur = true,
-  blur_popups = true,
-  ignore_alpha = 0.5,
-})
+-- No blur on wayle-bar-*: themes with a translucent bar (moo, 0.7) should
+-- show the wallpaper sharp. Menus share the bar's alpha, so they lose blur too.
 
 -- Smart gaps / no gaps when only
 hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
