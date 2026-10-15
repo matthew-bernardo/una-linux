@@ -219,6 +219,10 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(startPanel .. " restart"))
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
+-- macOS-style screenshots, copied to the clipboard (not saved to disk)
+hl.bind("CTRL + SHIFT + 3", hl.dsp.exec_cmd("hyprshot -m output -m active --clipboard-only"))
+hl.bind("CTRL + SHIFT + 4", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"))
+
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
