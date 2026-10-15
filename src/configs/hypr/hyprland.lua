@@ -240,6 +240,10 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
+-- 1:1 swipe between workspaces. Direction follows gestures.workspace_swipe_invert
+-- (default true, so the view follows the fingers, matching natural_scroll).
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+
 local resizeInterval = 100
 hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.resize({ x = -resizeInterval, y = 0, relative = true }))
 hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.resize({ x = resizeInterval, y = 0, relative = true }))
