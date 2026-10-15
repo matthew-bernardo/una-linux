@@ -9,6 +9,10 @@
   --font-sans: "BigBoldPixel";
   --font-mono: "BigBoldPixel";
 
+  /* Menu cards: the bar's colour as seen over moo_in_the_wild.jpg.
+     Wayle derives overlay/hover/active from this via color-mix. */
+  --palette-elevated: #68788f;
+
   /* Menus use these tokens; BigBoldPixel glyphs are ~2.7× normal, so
      shrink Wayle's base sizes (tokens/_index.scss) to match the bar. */
   --text-xs: calc(0.75rem * 0.32 * var(--global-scale));
@@ -59,7 +63,7 @@ button,
 }
 
 .dropdown {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .dropdown-header,
@@ -92,4 +96,22 @@ popover.background.dropdown > contents {
 
 popover.background.dropdown > contents > .dropdown {
   margin: 0 !important;
+}
+
+/* These sit on accent-blue (or the blue cards), so accent-coloured
+   text/fills vanish. Use a navy darker than fg-muted (#222c3a). */
+.dropdown scale trough highlight,
+.dropdown .audio-volume-slider trough highlight,
+.dropdown .audio-app-scale trough highlight {
+  background: #0e1622;
+}
+
+.dropdown button.profile-seg-btn:checked,
+.dropdown button.profile-seg-btn:checked image.profile-seg-icon {
+  color: #0e1622;
+}
+
+.dropdown label.cal-weekday.weekend {
+  color: #0e1622;
+  opacity: 1;
 }

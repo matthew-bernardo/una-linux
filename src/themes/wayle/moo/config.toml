@@ -13,14 +13,16 @@ font-mono = "BigBoldPixel"
 [styling]
 theme-provider = "wayle"
 rounding = "none"
+# Shrinks whole menus (spacing, icons, text); default 1.01.
+scale = 0.85
 
 [styling.palette]
 bg = "#ffffff"
 surface = "#ffffff"
 elevated = "#c0c0c0"
 fg = "#000000"
-fg-muted = "#c0c0c0"
-primary = "#c0c0c0"
+fg-muted = "#222c3a"
+primary = "#68788f"
 red = "#000000"
 yellow = "#c0c0c0"
 green = "#000000"
@@ -83,8 +85,8 @@ button-bg-color = "#ffffff"
 
 [[modules.notifications.thresholds]]
 above = 1
-icon-color = "#f7768e"
-label-color = "#f7768e"
+icon-color = "#b8707f"
+label-color = "#b8707f"
 
 [modules.volume]
 icon-color = "#000000"
