@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Load a Wayle theme folder: copy its config.toml over the live Wayle
-# config, copy style.css to ~/.config/wayle/styles/index.scss, extract a
+# config, copy style.css to ~/.config/wayle/styles/index.scss, install any
+# icons/*.svg into Wayle's icon dir, extract a
 # GUI palette, drop runtime.toml overrides, and record the name in
 # .una_asahi_setup.json so `una sync` can round-trip it.
 #
@@ -20,6 +21,7 @@ WAYLE_DIR="${HOME}/.config/wayle"
 LIVE_CONFIG="${WAYLE_DIR}/config.toml"
 LIVE_RUNTIME="${WAYLE_DIR}/runtime.toml"
 GUI_THEMES_DIR="${WAYLE_DIR}/themes"
+WAYLE_ICONS_DIR="${HOME}/.local/share/wayle/icons/hicolor/scalable/actions"
 WAYLE_THEME_PY="${_ASAHI_SETUP_SCRIPTS_DIR}/_wayle_theme.py"
 
 list_themes() {
@@ -69,6 +71,12 @@ mkdir -p "${WAYLE_DIR}" "${GUI_THEMES_DIR}" "$(dirname "${LIVE_STYLES}")"
 echo "loading theme from ${THEME_DIR}"
 cp --preserve=mode -- "${THEME_CONFIG}" "${LIVE_CONFIG}"
 cp --preserve=mode -- "${THEME_STYLE}" "${LIVE_STYLES}"
+# Theme-specific icons (e.g. moo's una-cow for icon-override). Wayle resolves
+# icon names from its own hicolor theme, not from the theme folder.
+if compgen -G "${THEME_DIR}/icons/*.svg" >/dev/null; then
+  mkdir -p "${WAYLE_ICONS_DIR}"
+  cp --preserve=mode -- "${THEME_DIR}"/icons/*.svg "${WAYLE_ICONS_DIR}/"
+fi
 python3 "${WAYLE_THEME_PY}" extract-palette "${THEME_CONFIG}" \
   "${GUI_THEMES_DIR}/${THEME_NAME}.toml"
 rm -f "${LIVE_RUNTIME}"

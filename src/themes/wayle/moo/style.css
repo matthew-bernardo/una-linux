@@ -115,24 +115,3 @@ popover.background.dropdown > contents > .dropdown {
   color: #0e1622;
   opacity: 1;
 }
-
-/* 🐮 button (custom-cow): colour emoji font, and undo the 0.35 label
-   scale that exists only to tame BigBoldPixel. */
-.custom.cow .bar-button-label {
-  font-family: "Noto Color Emoji";
-  font-size: 1rem;
-}
-
-/* No icon on the 🐮 button: drop the icon slot and the icon→label gap.
-   Extra selector parts beat menubutton.bar-button.basic .bar-button-label. */
-.custom.cow menubutton.bar-button .bar-button-label {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.custom.cow menubutton.bar-button > button.toggle image {
-  -gtk-icon-size: 0;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-}
