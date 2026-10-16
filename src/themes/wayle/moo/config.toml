@@ -45,9 +45,21 @@ button-label-weight = "normal"
 
 [[bar.layout]]
 monitor = "*"
-left = ["dashboard", "hyprland-workspaces"]
+left = ["custom-cow", "hyprland-workspaces"]
 center = []
 right = ["notifications", "volume", "network", "bluetooth", "battery", "clock", "custom-rec", "systray"]
+
+# Colour 🐮 in place of the dashboard button (its icon must be one-colour
+# symbolic). No CLI opens the dashboard dropdown, so click opens wofi.
+[[modules.custom]]
+id = "cow"
+# Runs once; class-format (for the CSS size fix) only applies after output.
+command = "echo cow"
+interval-ms = 0
+format = "🐮"
+class-format = "cow"
+left-click = "wofi --show drun"
+tooltip-format = "Apps"
 
 [[modules.custom]]
 id = "rec"
