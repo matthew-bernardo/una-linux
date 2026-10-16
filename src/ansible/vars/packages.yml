@@ -12,3 +12,4 @@ user_packages:
   - nodejs
   - python3.11
   - gedit
+  - lm_sensors # for monitoring CPU temperature in Wayle
