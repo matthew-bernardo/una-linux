@@ -115,3 +115,11 @@ popover.background.dropdown > contents > .dropdown {
   color: #0e1622;
   opacity: 1;
 }
+
+progressbar.osd-bar trough progress {
+  background: #0e1622;
+}
+
+image.osd-icon {
+  color: #0e1622;
+}
