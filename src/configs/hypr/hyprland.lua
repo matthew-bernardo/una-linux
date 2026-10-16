@@ -33,6 +33,8 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("systemctl --user start hyprland-session.service")
   hl.exec_cmd(startPanel)
   hl.exec_cmd("hyprpaper")
+  -- Idle lock (5 min) and lock-before-sleep on lid close; see hypridle.conf
+  hl.exec_cmd("hypridle")
   -- Korean input (Hangul); Alt+Space toggles
   hl.exec_cmd("fcitx5 -d --replace")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
