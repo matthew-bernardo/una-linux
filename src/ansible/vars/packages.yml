@@ -1,6 +1,9 @@
 ---
 # Fedora packages unrelated to Hyprland, installed with dnf.
+# ffmpeg is the RPM Fusion build. The packages play replaces ffmpeg-free
+# with it before this list is installed.
 user_packages:
+  - ffmpeg
   - vim-enhanced
   - neovim
   - jq
@@ -13,3 +16,6 @@ user_packages:
   - python3.11
   - gedit
   - lm_sensors # for monitoring CPU temperature in Wayle
+  - gstreamer1-plugins-bad-freeworld
+  - gstreamer1-plugins-ugly
+  - gstreamer1-plugin-openh264

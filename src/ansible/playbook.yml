@@ -351,6 +351,28 @@
         - clamav_sebool.rc | default(1) == 0
         - "'--> on' not in (clamav_sebool.stdout | default(''))"
 
+    - name: Enable RPM Fusion free
+      tags: [packages]
+      become: true
+      ansible.builtin.command:
+        argv:
+          - dnf
+          - install
+          - -y
+          - "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
+        creates: /etc/yum.repos.d/rpmfusion-free.repo
+
+    # ffmpeg-free (Fedora) and ffmpeg (RPM Fusion) conflict. allowerasing
+    # is the same transaction as `dnf swap ffmpeg-free ffmpeg --allowerasing`.
+    - name: Install RPM Fusion ffmpeg in place of ffmpeg-free
+      tags: [packages]
+      become: true
+      ansible.builtin.dnf:
+        name: ffmpeg
+        state: present
+        allowerasing: true
+        update_cache: true
+
     - name: Install user packages
       tags: [packages]
       become: true

@@ -20,7 +20,7 @@ That script currently has these install milestones:
 6. Install Wayle from source and copy the current Wayle theme's `config.toml` (`una load_theme`; name stored in `.una_asahi_setup.json`). `una export theme <name>` saves the live Wayle config and styles as a new theme in this checkout. Hyprland autostarts `~/.config/una/bin/start_panel`. Themes: `cmyk-dark`, `cmyk-light`, `minimal`, `moo`, `moo-dark`, `windows95`.
 7. Install zsh / oh-my-zsh, set `~/.zshrc`, copy `aliases.sh`/`functions.sh` to `~/.una`, and install `run_aliases.sh`
 8. Install and enable ClamAV (daemon + signature updater)
-9. Install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
+9. Enable RPM Fusion free, install `ffmpeg` in place of `ffmpeg-free`, then install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
 10. Persist Apple keyboard Fn ↔ Left Ctrl swap (`hid_apple.swap_fn_leftctrl=1` via `/etc/modprobe.d/hid_apple.conf` + `dracut -f`)
 11. Enable the MacBook notch (`appledrm.show_notch=1` via `grubby`; reboot to take effect)
 
