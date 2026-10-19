@@ -38,8 +38,8 @@ hl.on("hyprland.start", function()
   -- Korean input (Hangul); Alt+Space toggles
   hl.exec_cmd("fcitx5 -d --replace")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
-  -- So GTK/portal apps pick up dark mode
-  hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
+  -- So GTK/portal apps (and Chromium) pick up light mode
+  hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-light")
 end)
 
 hl.on("hyprland.shutdown", function()
