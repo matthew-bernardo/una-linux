@@ -191,12 +191,12 @@ pick_recording() {
   while IFS= read -r f; do
     [[ -n "${f}" ]] || continue
     files+=("${f}")
-  done < <(find "${dir}" -maxdepth 1 -type f -name '*.mp4' ! -name '*-wa.mp4' | LC_ALL=C sort)
+  done < <(find "${dir}" -maxdepth 1 -type f -name '*.mp4' ! -name '*-wa.mp4' | LC_ALL=C sort -r)
 
   ((${#files[@]})) || return 1
 
   if ! command -v wofi >/dev/null 2>&1; then
-    printf '%s\n' "${files[-1]}"
+    printf '%s\n' "${files[0]}"
     return 0
   fi
 
