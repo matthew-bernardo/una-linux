@@ -100,10 +100,6 @@ menubutton.bar-button .icon-container image {
   color: #f7768e;
 }
 
-progressbar.osd-bar trough progress {
-  background: #f7768e;
-}
-
 .dropdown {
   background-color: rgba(0, 0, 0, 0.7);
 }
