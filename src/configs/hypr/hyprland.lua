@@ -104,6 +104,10 @@ hl.config({
     force_default_wallpaper = -1,
     disable_hyprland_logo = false,
     focus_on_activate = true, -- Makes notifications focus the window --
+    -- Wake the screen on any input. If DPMS ends up off after resume, nothing
+    -- else turns it back on: a black screen with only the touch bar lit.
+    key_press_enables_dpms = true,
+    mouse_move_enables_dpms = true,
   },
 
   input = {
