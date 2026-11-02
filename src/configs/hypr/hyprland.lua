@@ -179,6 +179,13 @@ hl.layer_rule({
   no_anim = true,
 })
 
+-- slurp's overlay fades out after a selection, and grim captures it mid-fade
+-- (black border in screenshots). Drop it instantly instead.
+hl.layer_rule({
+  match = { namespace = "selection" },
+  no_anim = true,
+})
+
 -- No blur on wayle-bar-*: themes with a translucent bar (moo, 0.7) should
 -- show the wallpaper sharp. Menus share the bar's alpha, so they lose blur too.
 
