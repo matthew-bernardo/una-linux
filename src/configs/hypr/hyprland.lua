@@ -37,6 +37,9 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("hypridle")
   -- Korean input (Hangul); Alt+Space toggles
   hl.exec_cmd("fcitx5 -d --replace")
+  -- NetworkManager secret agent: supplies saved Wi-Fi passwords (eduroam)
+  -- from GNOME Keyring so those connections autoconnect after login
+  hl.exec_cmd("nm-applet --indicator")
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
   -- So GTK/portal apps (and Chromium) pick up light mode
   hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-light")

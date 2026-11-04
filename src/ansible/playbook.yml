@@ -61,6 +61,12 @@
           - playerctl
           - wireplumber
           - adwaita-cursor-theme
+          # Unlocks GNOME Keyring at SDDM login (sddm PAM already references
+          # pam_gnome_keyring.so); without it Chromium prompts on every boot.
+          - gnome-keyring-pam
+          # NetworkManager secret agent: saves Wi-Fi/eduroam passwords in the
+          # keyring so agent-owned connections can autoconnect after login.
+          - network-manager-applet
         state: present
         update_cache: true
 
