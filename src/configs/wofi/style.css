@@ -1,5 +1,7 @@
-/* Minimal — black/white glass, matches themes/wayle/minimal.
-   This file is what wofi loads. themes/minimal.css is only a backup copy. */
+/* White glass — frosted white panel, dark text. Same layout as minimal.
+   This file is what wofi loads. themes/minimal.css is the black glass backup.
+   Hyprland blurs the wofi layer (ignore_alpha = 0.5), so keep the panel
+   alpha above 0.5 or the blur drops out. */
 
 * {
   font-family: "VCR OSD Mono";
@@ -13,7 +15,7 @@
 window {
   margin: 0;
   background-color: transparent;
-  color: #ffffff;
+  color: #111111;
   border: none;
   box-shadow: none;
 }
@@ -21,8 +23,8 @@ window {
 #outer-box {
   margin: 0;
   padding: 4px;
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.6);
+  border: none;
   border-radius: 6px;
   box-shadow: none;
 }
@@ -30,18 +32,41 @@ window {
 #input {
   margin: 12px 12px 8px;
   padding: 8px 12px;
-  background-color: #000000;
+  /* The system GTK theme (Breeze) paints entries with background-image /
+     border-image, which sit on top of background-color — clear them or the
+     fill colour never shows. */
+  background-image: none;
+  border-image: none;
+  background-color: #233e6b;
   color: #ffffff;
-  border: 1px solid #333333;
+  caret-color: #ffffff;
+  border: 1px solid #233e6b;
   border-radius: 0;
   outline: none;
   box-shadow: none;
 }
 
 #input:focus {
-  border-color: #333333;
+  background-image: none;
+  border-image: none;
+  background-color: #233e6b;
+  border-color: #233e6b;
   outline: none;
   box-shadow: none;
+}
+
+#input image {
+  color: #ffffff;
+}
+
+/* "Search" placeholder. GTK3 has no placeholder CSS node: it looks up the
+   named colour placeholder_text_color and falls back to #808080 grey.
+   Alpha is ignored here, so use a solid colour (≈55% white over #233e6b). */
+@define-color placeholder_text_color #9ca8bc;
+
+#input selection {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 
 #inner-box {
@@ -60,7 +85,7 @@ window {
 #entry {
   padding: 6px 8px;
   background-color: transparent;
-  color: #ffffff;
+  color: #111111;
   border-radius: 0;
   border: none;
   outline: none;
@@ -68,18 +93,18 @@ window {
 }
 
 #entry:selected {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.5);
   border: none;
   outline: none;
-  box-shadow: inset 0 0 0 1px #ffffff;
+  box-shadow: inset 0 0 0 1px #233e6b;
 }
 
 #entry:selected #text {
-  color: #ffffff;
+  color: #000000;
 }
 
 #text {
-  color: #ffffff;
+  color: #111111;
 }
 
 #img {
