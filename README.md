@@ -74,7 +74,12 @@ licence) and installs:
   `/dev/displaylink/by-id/…` link that DisplayLinkManager waits for.
 - `/usr/lib/systemd/system-sleep/una-displaylink` to suspend/resume it.
 
-Hyprland picks up the dock's monitor (`DVI-I-*`) without extra config.
+Hyprland picks up the dock's monitor (`DVI-I-*`) by itself. `hyprland.lua`
+adds a docked mode for the ASUS VG27A: while it is connected the laptop
+screen is off and the ASUS runs at its native 2560x1440, scale 1.
+`SUPER+SHIFT+D` turns the laptop screen back on until the next undock.
+Monitor rules only apply when the config loads, so the config reloads
+itself when that monitor is plugged in or out.
 
 **Kernel updates.** evdi is built outside the kernel, so a new kernel can
 break it. After each kernel install, `/etc/kernel/install.d/99-una-evdi.install`

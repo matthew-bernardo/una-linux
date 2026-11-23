@@ -10,6 +10,76 @@
 -- hl.monitor({ output = "", mode = "4096x2160@60", position = "auto", scale = 2 })
 -- hl.monitor({ output = "HDMI-A-2", mode = "4096x2160@60", position = "auto", scale = 2 })
 
+-- Docked mode: while the ASUS VG27A (on the DisplayLink dock) is connected,
+-- the laptop screen is off and the ASUS runs at its own resolution/scale.
+-- SUPER+SHIFT+D turns the laptop screen back on until the next undock.
+-- Matched by description because the DisplayLink connector name (DVI-I-N)
+-- can change between plugs.
+local dockedDesc = "ASUSTek COMPUTER INC VG27A S1LMQS030526"
+local runtimeDir = os.getenv("XDG_RUNTIME_DIR") or "/tmp"
+local laptopOnFlag = runtimeDir .. "/una-laptop-screen-on"
+local dockStateFile = runtimeDir .. "/una-dock-state"
+
+local function fileExists(path)
+  local f = io.open(path, "r")
+  if f then f:close() return true end
+  return false
+end
+
+local function isDockedMonitor(m)
+  return m ~= nil and m.description ~= nil and m.description:find(dockedDesc, 1, true) ~= nil
+end
+
+local function dockedMonitorConnected()
+  for _, m in ipairs(hl.get_monitors() or {}) do
+    if isDockedMonitor(m) then return true end
+  end
+  return false
+end
+
+local function readDockState()
+  local f = io.open(dockStateFile, "r")
+  if not f then return nil end
+  local s = f:read("*l")
+  f:close()
+  return s
+end
+
+local docked = dockedMonitorConnected()
+do
+  local f = io.open(dockStateFile, "w")
+  if f then f:write(docked and "docked" or "undocked") f:close() end
+end
+if not docked then os.remove(laptopOnFlag) end
+
+hl.monitor({ output = "desc:" .. dockedDesc, mode = "preferred", position = "0x0", scale = 1 })
+if docked and not fileExists(laptopOnFlag) then
+  hl.monitor({ output = "eDP-1", disabled = true })
+else
+  hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 2 })
+end
+
+-- Monitor rules are evaluated when the config loads, so reload when the
+-- docked monitor comes or goes. The state file stops reload loops: only
+-- reload when docked/undocked actually changed.
+local function onMonitorChange(event)
+  return function(m)
+    local nowDocked
+    if isDockedMonitor(m) then
+      nowDocked = (event == "added")
+    elseif m == nil or m.description == nil then
+      nowDocked = dockedMonitorConnected()
+    else
+      return -- some other monitor (e.g. eDP-1 being switched off)
+    end
+    if (nowDocked and "docked" or "undocked") ~= readDockState() then
+      hl.exec_cmd("hyprctl reload")
+    end
+  end
+end
+hl.on("monitor.added", onMonitorChange("added"))
+hl.on("monitor.removed", onMonitorChange("removed"))
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -237,6 +307,9 @@ hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(startPanel .. " restart"))
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
+-- Docked mode: toggle the laptop screen while the ASUS is connected
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd(
+  [[sh -c 'f="${XDG_RUNTIME_DIR:-/tmp}/una-laptop-screen-on"; if [ -e "$f" ]; then rm "$f"; else touch "$f"; fi; hyprctl reload']]))
 
 -- Four-finger horizontal trackpad swipe switches workspaces
 hl.gesture({ fingers = 4, direction = "horizontal", action = "workspace" })
