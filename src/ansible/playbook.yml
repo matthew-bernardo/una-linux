@@ -95,11 +95,49 @@
         src: "{{ playbook_dir }}/../configs/systemd/user/hyprland-session.service"
         dest: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/hyprland-session.service"
 
+    # Classic-Bluetooth HID devices (Magic Mouse, Magic Keyboard) report
+    # battery only to the kernel; this hands it to BlueZ so Bluetooth menus
+    # (Wayle's included) show it.
+    - name: Install Bluetooth HID battery provider dependencies
+      tags: [hyprland]
+      become: true
+      ansible.builtin.dnf:
+        name: python3-gobject
+        state: present
+
+    - name: Ensure una bin directory exists for the battery provider
+      tags: [hyprland]
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/.config/una/bin"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Bluetooth HID battery provider
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/una/una-bt-battery"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/una/bin/una-bt-battery"
+        mode: "0755"
+
+    - name: Copy Bluetooth HID battery provider unit
+      tags: [hyprland]
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../configs/systemd/user/una-bt-battery.service"
+        dest: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/una-bt-battery.service"
+
     - name: Reload systemd user units
       tags: [hyprland]
       ansible.builtin.systemd:
         scope: user
         daemon_reload: true
+
+    - name: Enable Bluetooth HID battery provider
+      tags: [hyprland]
+      ansible.builtin.systemd:
+        scope: user
+        name: una-bt-battery.service
+        enabled: true
+        state: restarted
 
     - name: Copy kitty config and themes
       tags: [hyprland]

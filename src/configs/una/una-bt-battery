@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+"""Report kernel-only Bluetooth battery levels to BlueZ.
+
+Some Bluetooth devices (Apple Magic Mouse, Magic Keyboard, Magic Trackpad,
+other classic-Bluetooth HID devices) report battery through the kernel's HID
+driver: it shows up in /sys/class/power_supply/hid-<mac>-battery and in
+UPower, but BlueZ never learns it, so Bluetooth menus (Wayle's included) show
+no battery for them.
+
+This service reads those levels from UPower and publishes them through
+BlueZ's BatteryProviderManager1 API. BlueZ then exposes org.bluez.Battery1 on
+the device, the same as for devices that report battery over Bluetooth
+themselves (most BLE keyboards and mice, headsets via PipeWire).
+
+Installed by una as a systemd user service (una-bt-battery.service).
+"""
+
+import re
+import sys
+
+from gi.repository import Gio, GLib
+
+BLUEZ = "org.bluez"
+UPOWER = "org.freedesktop.UPower"
+UPOWER_PATH = "/org/freedesktop/UPower"
+OM_IFACE = "org.freedesktop.DBus.ObjectManager"
+PROPS_IFACE = "org.freedesktop.DBus.Properties"
+PROVIDER_IFACE = "org.bluez.BatteryProvider1"
+ROOT = "/una/battery"
+SOURCE = "HID (una-bt-battery)"
+
+HID_PATH_RE = re.compile(r"^hid-([0-9a-f]{2}(?::[0-9a-f]{2}){5})-battery", re.I)
+
+NODE_XML = Gio.DBusNodeInfo.new_for_xml(
+    """
+<node>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg type="a{oa{sa{sv}}}" direction="out"/>
+    </method>
+    <signal name="InterfacesAdded">
+      <arg type="o"/><arg type="a{sa{sv}}"/>
+    </signal>
+    <signal name="InterfacesRemoved">
+      <arg type="o"/><arg type="as"/>
+    </signal>
+  </interface>
+  <interface name="org.bluez.BatteryProvider1">
+    <property name="Device" type="o" access="read"/>
+    <property name="Percentage" type="y" access="read"/>
+    <property name="Source" type="s" access="read"/>
+  </interface>
+</node>
+"""
+)
+OM_INFO = NODE_XML.lookup_interface(OM_IFACE)
+PROVIDER_INFO = NODE_XML.lookup_interface(PROVIDER_IFACE)
+
+
+def log(msg):
+    print(msg, file=sys.stderr, flush=True)
+
+
+class Provider:
+    def __init__(self, bus):
+        self.bus = bus
+        # provider object path -> {"device": bluez path, "pct": int}
+        self.batteries = {}
+        self.reg_ids = {}
+        self.adapters = set()  # adapters we are registered with
+        self.resync_pending = False
+
+        self.bus.register_object_with_closures2(
+            ROOT, OM_INFO, self._on_om_call, None, None)
+
+        for args in (
+            (UPOWER, UPOWER, "DeviceAdded", UPOWER_PATH),
+            (UPOWER, UPOWER, "DeviceRemoved", UPOWER_PATH),
+            (UPOWER, PROPS_IFACE, "PropertiesChanged", None),
+            (BLUEZ, OM_IFACE, "InterfacesAdded", "/"),
+            (BLUEZ, OM_IFACE, "InterfacesRemoved", "/"),
+        ):
+            self.bus.signal_subscribe(
+                args[0], args[1], args[2], args[3], None,
+                Gio.DBusSignalFlags.NONE, self._on_change,
+            )
+
+        Gio.bus_watch_name_on_connection(
+            self.bus, BLUEZ, Gio.BusNameWatcherFlags.NONE,
+            self._on_bluez_up, self._on_bluez_down,
+        )
+        # Catch slow changes nobody signals (e.g. a stale level).
+        GLib.timeout_add_seconds(120, self._periodic)
+
+    # ---- D-Bus helpers -------------------------------------------------
+
+    def _call(self, name, path, iface, method, args=None, reply=None):
+        return self.bus.call_sync(
+            name, path, iface, method, args,
+            GLib.VariantType(reply) if reply else None,
+            Gio.DBusCallFlags.NONE, 5000, None,
+        )
+
+    def _managed(self, name, path):
+        try:
+            return self._call(name, path, OM_IFACE, "GetManagedObjects",
+                              None, "(a{oa{sa{sv}}})").unpack()[0]
+        except GLib.Error:
+            return {}
+
+    # ---- object export -------------------------------------------------
+
+    @staticmethod
+    def _props(entry):
+        return {
+            "Device": GLib.Variant("o", entry["device"]),
+            "Percentage": GLib.Variant("y", entry["pct"]),
+            "Source": GLib.Variant("s", SOURCE),
+        }
+
+    def _on_om_call(self, conn, sender, path, iface, method, params, invocation):
+        if method != "GetManagedObjects":
+            invocation.return_dbus_error(
+                "org.freedesktop.DBus.Error.UnknownMethod", method)
+            return
+        objs = {p: {PROVIDER_IFACE: self._props(e)} for p, e in self.batteries.items()}
+        invocation.return_value(GLib.Variant("(a{oa{sa{sv}}})", (objs,)))
+
+    def _on_prop_get(self, conn, sender, path, iface, prop):
+        entry = self.batteries.get(path)
+        return self._props(entry).get(prop) if entry else None
+
+    def _export(self, path, entry):
+        self.batteries[path] = entry
+        self.reg_ids[path] = self.bus.register_object_with_closures2(
+            path, PROVIDER_INFO, None, self._on_prop_get, None)
+        self.bus.emit_signal(
+            None, ROOT, OM_IFACE, "InterfacesAdded",
+            GLib.Variant("(oa{sa{sv}})", (path, {PROVIDER_IFACE: self._props(entry)})),
+        )
+
+    def _unexport(self, path):
+        self.bus.unregister_object(self.reg_ids.pop(path))
+        del self.batteries[path]
+        self.bus.emit_signal(
+            None, ROOT, OM_IFACE, "InterfacesRemoved",
+            GLib.Variant("(oas)", (path, [PROVIDER_IFACE])),
+        )
+
+    def _update(self, path, pct):
+        self.batteries[path]["pct"] = pct
+        self.bus.emit_signal(
+            None, path, PROPS_IFACE, "PropertiesChanged",
+            GLib.Variant("(sa{sv}as)", (
+                PROVIDER_IFACE, {"Percentage": GLib.Variant("y", pct)}, [])),
+        )
+
+    # ---- state ---------------------------------------------------------
+
+    def _hid_levels(self):
+        """MAC (upper case) -> percentage, from UPower's HID batteries."""
+        levels = {}
+        try:
+            devices = self._call(UPOWER, UPOWER_PATH, UPOWER, "EnumerateDevices",
+                                 None, "(ao)").unpack()[0]
+        except GLib.Error:
+            return levels
+        for dev in devices:
+            try:
+                props = self._call(UPOWER, dev, PROPS_IFACE, "GetAll",
+                                   GLib.Variant("(s)", ("org.freedesktop.UPower.Device",)),
+                                   "(a{sv})").unpack()[0]
+            except GLib.Error:
+                continue
+            m = HID_PATH_RE.match(props.get("NativePath", ""))
+            if not m or not props.get("IsPresent", False):
+                continue
+            levels[m.group(1).upper()] = max(0, min(100, round(props.get("Percentage", 0))))
+        return levels
+
+    def _bluez_devices(self):
+        """MAC -> (device path, adapter path, has BlueZ's own Battery1)."""
+        out = {}
+        for path, ifaces in self._managed(BLUEZ, "/").items():
+            dev = ifaces.get("org.bluez.Device1")
+            if not dev or not dev.get("Connected", False):
+                continue
+            own = "org.bluez.Battery1" in ifaces and path not in {
+                e["device"] for e in self.batteries.values()}
+            out[dev["Address"].upper()] = (path, dev["Adapter"], own)
+        return out
+
+    def _register_adapters(self):
+        for path, ifaces in self._managed(BLUEZ, "/").items():
+            if "org.bluez.BatteryProviderManager1" not in ifaces or path in self.adapters:
+                continue
+            try:
+                self._call(BLUEZ, path, "org.bluez.BatteryProviderManager1",
+                           "RegisterBatteryProvider", GLib.Variant("(o)", (ROOT,)))
+                self.adapters.add(path)
+                log(f"registered battery provider with {path}")
+            except GLib.Error as e:
+                log(f"could not register with {path}: {e.message}")
+
+    def resync(self):
+        self.resync_pending = False
+        if not self.adapters:
+            return False
+        levels = self._hid_levels()
+        bluez = self._bluez_devices()
+
+        want = {}
+        for mac, pct in levels.items():
+            if mac not in bluez:
+                continue  # USB-connected, or not paired with this machine
+            dev_path, adapter, own = bluez[mac]
+            if own or adapter not in self.adapters:
+                continue  # BlueZ already knows this battery
+            want[f"{ROOT}/dev_{mac.replace(':', '_')}"] = {"device": dev_path, "pct": pct}
+
+        for path in [p for p in self.batteries if p not in want]:
+            self._unexport(path)
+            log(f"removed {path}")
+        for path, entry in want.items():
+            if path not in self.batteries:
+                self._export(path, entry)
+                log(f"added {path} ({entry['pct']}%)")
+            elif self.batteries[path]["pct"] != entry["pct"]:
+                self._update(path, entry["pct"])
+        return False
+
+    def schedule_resync(self):
+        # Coalesce bursts of signals into one pass.
+        if not self.resync_pending:
+            self.resync_pending = True
+            GLib.timeout_add(500, self.resync)
+
+    # ---- callbacks -----------------------------------------------------
+
+    def _on_change(self, *_):
+        self.schedule_resync()
+
+    def _periodic(self):
+        self.schedule_resync()
+        return True
+
+    def _on_bluez_up(self, *_):
+        self._register_adapters()
+        self.schedule_resync()
+
+    def _on_bluez_down(self, *_):
+        # BlueZ forgets providers when it stops; start clean when it is back.
+        self.adapters.clear()
+        for path in list(self.batteries):
+            self.bus.unregister_object(self.reg_ids.pop(path))
+            del self.batteries[path]
+
+
+def main():
+    bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+    provider = Provider(bus)
+    # Adapters added later (USB dongle, rfkill) also need a registration.
+    bus.signal_subscribe(
+        BLUEZ, OM_IFACE, "InterfacesAdded", "/", None, Gio.DBusSignalFlags.NONE,
+        lambda *_: provider._register_adapters(),
+    )
+    GLib.MainLoop().run()
+
+
+if __name__ == "__main__":
+    main()

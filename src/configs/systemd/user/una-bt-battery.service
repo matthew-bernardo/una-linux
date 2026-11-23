@@ -1,0 +1,11 @@
+[Unit]
+Description=Report HID Bluetooth battery levels to BlueZ
+Documentation=file://%h/.config/una/bin/una-bt-battery
+
+[Service]
+ExecStart=%h/.config/una/bin/una-bt-battery
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

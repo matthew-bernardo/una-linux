@@ -99,7 +99,9 @@ declare -A FILE_MAP=(
   [zsh/run_aliases.sh]="${HOME}/.config/una/bin/run_aliases.sh"
   [una/una]="${HOME}/.config/una/bin/una"
   [una/wayle_rec]="${HOME}/.config/una/bin/wayle_rec"
+  [una/una-bt-battery]="${HOME}/.config/una/bin/una-bt-battery"
   [systemd/user/hyprland-session.service]="${HOME}/.config/systemd/user/hyprland-session.service"
+  [systemd/user/una-bt-battery.service]="${HOME}/.config/systemd/user/una-bt-battery.service"
   [gedit/minimal.xml]="${HOME}/.local/share/libgedit-gtksourceview-300/styles/minimal.xml"
   [gtk-4.0/gtk.css]="${HOME}/.config/gtk-4.0/gtk.css"
 )
