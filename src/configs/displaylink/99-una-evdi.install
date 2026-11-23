@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+# Installed by una (install_displaylink) to /etc/kernel/install.d/.
+# Runs after 40-dkms.install (which builds evdi for the new kernel) and after
+# the hooks that make the new kernel the default, so it can undo that choice.
+# Never fails: a DisplayLink problem must not break a kernel install.
+COMMAND="$1"
+KERNEL_VERSION="$2"
+
+case "${COMMAND}" in
+  add) /usr/local/sbin/una-evdi-kernel check "${KERNEL_VERSION}" || true ;;
+  remove) /usr/local/sbin/una-evdi-kernel forget "${KERNEL_VERSION}" || true ;;
+esac
+exit 0

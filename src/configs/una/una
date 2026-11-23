@@ -56,6 +56,9 @@ ${BOLD}${MAGENTA}una${RESET}  ${DIM}·${RESET}  commands from this checkout
   ${CYAN}una export theme${RESET} <name>
       Save the live Wayle config as a new theme in the checkout
 
+  ${CYAN}una displaylink${RESET} [ kernel | restart | logs ]
+      DisplayLink dock status; pick a kernel if evdi failed to build
+
 Set ${BOLD}UNA_ROOT${RESET} if the checkout is not at ~/.una/una-linux
 EOF
 }
@@ -78,6 +81,9 @@ case "${cmd}" in
     ;;
   sync)
     exec "${ROOT}/sync.sh" "$@"
+    ;;
+  displaylink | dl)
+    exec "${ROOT}/src/scripts/displaylink_status.sh" "$@"
     ;;
   load_theme | theme)
     exec "${ROOT}/src/scripts/load_theme.sh" "$@"
@@ -102,7 +108,7 @@ case "${cmd}" in
     ;;
   *)
     echo "unknown command: ${cmd}" >&2
-    echo "try: una apply  ·  una sync  ·  una load_theme  ·  una export theme" >&2
+    echo "try: una apply  ·  una sync  ·  una load_theme  ·  una export theme  ·  una displaylink" >&2
     exit 2
     ;;
 esac

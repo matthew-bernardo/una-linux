@@ -1,0 +1,20 @@
+# Installed by una (install_displaylink) to /etc/udev/rules.d/.
+#
+# DisplayLinkManager does not scan USB itself: it watches
+# /dev/displaylink/by-id/<ID_BUS>-<BUSNUM>-<DEVNUM>-<ID_SERIAL> links to the
+# device node. DisplayLink's own rule makes those with a shell script and
+# starts the service with systemctl; udev can do both natively, which also
+# avoids SELinux trouble with scripts creating things under /dev.
+ACTION=="remove", GOTO="una_displaylink_end"
+SUBSYSTEM!="usb", GOTO="una_displaylink_end"
+ENV{DEVTYPE}!="usb_device", GOTO="una_displaylink_end"
+ATTR{idVendor}!="17e9", GOTO="una_displaylink_end"
+
+IMPORT{builtin}="usb_id"
+SYMLINK+="displaylink/by-id/$env{ID_BUS}-$env{BUSNUM}-$env{DEVNUM}-$env{ID_SERIAL}"
+TAG+="systemd", ENV{SYSTEMD_WANTS}+="displaylink-driver.service"
+
+# DisplayLink disables USB 3 link power management (U1/U2) for its devices.
+ACTION=="add", RUN+="/bin/sh -c 'echo 0 > /sys%p/port/usb3_lpm_permit 2>/dev/null || true'"
+
+LABEL="una_displaylink_end"

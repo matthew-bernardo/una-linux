@@ -43,6 +43,9 @@ hl.on("hyprland.start", function()
   hl.exec_cmd('hyprctl setcursor "Adwaita" 24')
   -- So GTK/portal apps (and Chromium) pick up light mode
   hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-light")
+  -- Warn if evdi (DisplayLink) did not build for a newly installed kernel.
+  -- Delayed so the panel's notification daemon is up.
+  hl.exec_cmd("sh -c 'sleep 10; [ -x /usr/local/sbin/una-evdi-kernel ] && /usr/local/sbin/una-evdi-kernel notify'")
 end)
 
 hl.on("hyprland.shutdown", function()

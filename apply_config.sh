@@ -30,6 +30,7 @@ echo "una: revision $("${SCRIPTS}/get_current_revision.sh")"
 "${SCRIPTS}/run_step.sh" --sudo install_packages "${SCRIPTS}/install_packages.sh"
 "${SCRIPTS}/run_step.sh" --sudo configure_hid_apple "${SCRIPTS}/configure_hid_apple.sh"
 "${SCRIPTS}/run_step.sh" --sudo configure_notch "${SCRIPTS}/configure_notch.sh"
+"${SCRIPTS}/run_step.sh" --sudo install_displaylink "${SCRIPTS}/install_displaylink.sh"
 # Not a milestone: a wedged portal is runtime state, so every apply restarts it.
 "${SCRIPTS}/restart_desktop_portals.sh"
 

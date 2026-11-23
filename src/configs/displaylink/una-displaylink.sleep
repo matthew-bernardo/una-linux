@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+# Installed by una (install_displaylink) to /usr/lib/systemd/system-sleep/.
+# Tells DisplayLinkManager to suspend/resume, like DisplayLink's suspend.sh,
+# but only when it is running: writing to its FIFO with no reader would block
+# suspend forever.
+IN=/tmp/PmMessagesPort_in
+OUT=/tmp/PmMessagesPort_out
+
+systemctl is-active --quiet displaylink-driver.service || exit 0
+[[ -p "${IN}" ]] || exit 0
+
+case "$1" in
+  pre)
+    if [[ -p "${OUT}" ]]; then
+      # Flush stale bytes, then wait for DisplayLinkManager to acknowledge.
+      while timeout 1 dd if="${OUT}" bs=1 count=1 status=none >/dev/null 2>&1; do :; done
+      timeout 5 sh -c "echo S > '${IN}'" || exit 0
+      timeout 10 dd if="${OUT}" bs=1 count=1 status=none >/dev/null 2>&1 || true
+    else
+      timeout 5 sh -c "echo S > '${IN}'" || true
+    fi
+    ;;
+  post)
+    timeout 5 sh -c "echo R > '${IN}'" || true
+    ;;
+esac
+exit 0

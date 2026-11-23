@@ -1,0 +1,20 @@
+# Installed by una (install_displaylink) to /etc/systemd/system/.
+# Started by 99-displaylink.rules when a DisplayLink (17e9) device appears.
+[Unit]
+Description=DisplayLink Manager
+# Start after the real GPU drivers so evdi never claims the first DRM card.
+After=display-manager.service
+# If evdi is missing (e.g. it did not build for this kernel), give up instead
+# of restarting forever. `una displaylink` explains what happened.
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+ExecStartPre=/usr/sbin/modprobe evdi
+ExecStart=/usr/libexec/displaylink-driver/DisplayLinkManager
+# DisplayLinkManager finds its firmware (*.spkg) in the working directory and
+# dlopens libevdi.so.1 from the library path.
+WorkingDirectory=/usr/libexec/displaylink-driver
+Environment=LD_LIBRARY_PATH=/usr/libexec/displaylink-driver
+Restart=always
+RestartSec=5

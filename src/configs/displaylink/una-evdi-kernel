@@ -1,0 +1,225 @@
+#!/usr/bin/bash
+# Installed by una (install_displaylink) to /usr/local/sbin/una-evdi-kernel.
+#
+# Keeps track of kernels that evdi (the DisplayLink kernel module) did not
+# build for, and lets you decide whether to keep booting an older kernel
+# where DisplayLink works.
+#
+#   check KVER   (root) called by /etc/kernel/install.d/99-una-evdi.install
+#                after a kernel install. Retries the DKMS build once; on
+#                failure records it and, if there is a terminal, asks.
+#   choose [KVER] (root) ask again for a recorded failure
+#   forget KVER  (root) drop records for a removed kernel
+#   pending      list undecided failures (one KVER per line); exit 1 if none
+#   fallback KVER  newest other installed kernel that has evdi
+#   notify       (user) desktop notification if something is undecided
+set -euo pipefail
+
+STATE="${UNA_EVDI_STATE:-/var/lib/una/displaylink}"
+FAILED="${STATE}/failed"
+DECIDED="${STATE}/decided"
+TTY=/dev/tty
+
+has_evdi() {
+  [[ -n "$(find "/lib/modules/$1" -name 'evdi.ko*' -print -quit 2>/dev/null)" ]]
+}
+
+installed_kernels() {
+  local d
+  for d in /lib/modules/*/; do
+    d="${d%/}"
+    d="${d##*/}"
+    [[ -e "/boot/vmlinuz-${d}" ]] && printf '%s\n' "${d}"
+  done | sort -V
+}
+
+fallback() {
+  local kver="$1" running k best=""
+  running="$(uname -r)"
+  if [[ "${running}" != "${kver}" ]] && has_evdi "${running}" && [[ -e "/boot/vmlinuz-${running}" ]]; then
+    printf '%s\n' "${running}"
+    return 0
+  fi
+  while IFS= read -r k; do
+    [[ "${k}" == "${kver}" ]] && continue
+    has_evdi "${k}" && best="${k}"
+  done < <(installed_kernels)
+  [[ -n "${best}" ]] && printf '%s\n' "${best}"
+}
+
+need_root() {
+  if [[ "${EUID}" -ne 0 ]]; then
+    echo "una-evdi-kernel $1: run as root" >&2
+    exit 1
+  fi
+}
+
+have_tty() {
+  [[ -r "${TTY}" && -w "${TTY}" ]] && { : <"${TTY}"; } 2>/dev/null
+}
+
+prune() {
+  local f k
+  for f in "${FAILED}"/* "${DECIDED}"/*; do
+    [[ -e "${f}" ]] || continue
+    k="${f##*/}"
+    [[ -d "/lib/modules/${k}" ]] || rm -f "${f}"
+  done
+}
+
+decide() {
+  printf '%s\n' "$2" >"${DECIDED}/$1"
+}
+
+set_default() {
+  /usr/sbin/grubby --set-default "/boot/vmlinuz-$1" >/dev/null
+}
+
+ask() {
+  local kver="$1" fb reply
+  fb="$(fallback "${kver}" || true)"
+  if [[ -z "${fb}" ]]; then
+    printf 'No other installed kernel has evdi, so there is nothing to switch to.\n' >"${TTY}"
+    decide "${kver}" "none"
+    return 0
+  fi
+  {
+    printf '\n\033[1mDisplayLink: evdi did not build for kernel %s.\033[0m\n' "${kver}"
+    printf 'The second monitor will not work while that kernel is running.\n'
+    printf '  k  keep booting %s (DisplayLink works there)\n' "${fb}"
+    printf '  n  boot %s anyway\n' "${kver}"
+    printf '  s  decide later (run: una displaylink)\n'
+    printf 'Choice [k/n/S]: '
+  } >"${TTY}"
+  reply=""
+  IFS= read -r -t 120 reply <"${TTY}" || true
+  case "${reply}" in
+    k | K)
+      set_default "${fb}"
+      decide "${kver}" "kept:${fb}"
+      printf 'Default boot kernel: %s\n' "${fb}" >"${TTY}"
+      ;;
+    n | N)
+      set_default "${kver}"
+      decide "${kver}" "new"
+      printf 'Default boot kernel: %s (no DisplayLink)\n' "${kver}" >"${TTY}"
+      ;;
+    *)
+      printf 'Left undecided. Next boot uses the default kernel; run `una displaylink` to choose.\n' >"${TTY}"
+      ;;
+  esac
+}
+
+cmd_check() {
+  local kver="$1" log ver
+  need_root check
+  mkdir -p "${FAILED}" "${DECIDED}"
+  chmod 755 "${STATE}" "${FAILED}" "${DECIDED}"
+  prune
+
+  if ! has_evdi "${kver}"; then
+    log="${STATE}/build-${kver}.log"
+    if [[ -e "/lib/modules/${kver}/build/Makefile" ]]; then
+      ver="$(dkms status -m evdi 2>/dev/null | sed -n 's|^evdi/\([^,:]*\).*|\1|p' | sort -V | tail -1)"
+      if [[ -n "${ver}" ]]; then
+        dkms install -m evdi -v "${ver}" -k "${kver}" >"${log}" 2>&1 || true
+      else
+        echo "evdi is not registered with dkms (rerun: una apply)" >"${log}"
+      fi
+    else
+      echo "kernel headers for ${kver} are missing (install kernel-16k-devel-matched)" >"${log}"
+    fi
+  fi
+
+  if has_evdi "${kver}"; then
+    rm -f "${FAILED}/${kver}" "${DECIDED}/${kver}"
+    # A newer working kernel makes older undecided failures irrelevant.
+    local f k
+    for f in "${FAILED}"/*; do
+      [[ -e "${f}" ]] || continue
+      k="${f##*/}"
+      [[ -e "${DECIDED}/${k}" ]] || decide "${k}" "superseded:${kver}"
+    done
+    echo "una: evdi (DisplayLink) is ready for kernel ${kver}"
+    return 0
+  fi
+
+  printf '%s\n' "${log}" >"${FAILED}/${kver}"
+  rm -f "${DECIDED}/${kver}"
+  {
+    echo "################################################################"
+    echo "una: evdi (DisplayLink) did NOT build for kernel ${kver}."
+    echo "     DisplayLink monitors will not work on that kernel."
+    echo "     Build log: ${log}"
+    echo "     Choose which kernel to boot: una displaylink"
+    echo "################################################################"
+  } >&2
+  if have_tty; then
+    ask "${kver}"
+  fi
+}
+
+cmd_choose() {
+  need_root choose
+  have_tty || { echo "una-evdi-kernel choose: needs a terminal" >&2; exit 1; }
+  local kver="${1:-}"
+  if [[ -z "${kver}" ]]; then
+    kver="$(list_pending | tail -1)"
+  fi
+  if [[ -z "${kver}" ]]; then
+    echo "Nothing to decide: no recorded evdi build failures."
+    return 0
+  fi
+  ask "${kver}"
+}
+
+list_pending() {
+  local f k
+  for f in "${FAILED}"/*; do
+    [[ -e "${f}" ]] || continue
+    k="${f##*/}"
+    if [[ -d "/lib/modules/${k}" && ! -e "${DECIDED}/${k}" ]]; then
+      printf '%s\n' "${k}"
+    fi
+  done | sort -V
+}
+
+cmd_pending() {
+  local out
+  out="$(list_pending)"
+  [[ -n "${out}" ]] || return 1
+  printf '%s\n' "${out}"
+}
+
+cmd_notify() {
+  local pending running
+  pending="$(list_pending | tr '\n' ' ')"
+  running="$(uname -r)"
+  command -v notify-send >/dev/null 2>&1 || return 0
+  if [[ -n "${pending}" ]]; then
+    notify-send -u critical -a una "DisplayLink" \
+      "evdi did not build for kernel ${pending% }. Run 'una displaylink' to choose which kernel to boot."
+  elif ! has_evdi "${running}" && [[ -n "$(fallback "${running}" || true)" ]]; then
+    notify-send -u normal -a una "DisplayLink" \
+      "This kernel (${running}) has no evdi, so DisplayLink monitors will not work. Run 'una displaylink'."
+  fi
+}
+
+cmd_forget() {
+  need_root forget
+  rm -f "${FAILED}/$1" "${DECIDED}/$1" "${STATE}/build-$1.log"
+}
+
+case "${1:-}" in
+  check) cmd_check "${2:?KVER}" ;;
+  choose) cmd_choose "${2:-}" ;;
+  forget) cmd_forget "${2:?KVER}" ;;
+  pending) cmd_pending ;;
+  fallback) fallback "${2:?KVER}" ;;
+  notify) cmd_notify ;;
+  has-evdi) has_evdi "${2:-$(uname -r)}" ;;
+  *)
+    echo "usage: una-evdi-kernel check|choose|forget|pending|fallback|notify|has-evdi" >&2
+    exit 2
+    ;;
+esac

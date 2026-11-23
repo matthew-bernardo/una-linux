@@ -23,6 +23,7 @@ That script currently has these install milestones:
 9. Enable RPM Fusion free, install `ffmpeg` in place of `ffmpeg-free`, then install user packages listed in `ansible/vars/packages.yml` (`vim`, `nvim`, …)
 10. Persist Apple keyboard Fn ↔ Left Ctrl swap (`hid_apple.swap_fn_leftctrl=1` via `/etc/modprobe.d/hid_apple.conf` + `dracut -f`)
 11. Enable the MacBook notch (`appledrm.show_notch=1` via `grubby`; reboot to take effect)
+12. Install DisplayLink for USB docks (see [DisplayLink](#displaylink))
 
 Hyprland, Wayle, the shell, ClamAV, and user packages are implemented in Ansible (`ansible/playbook.yml`).
 
@@ -53,6 +54,50 @@ boot. Initramfs/GRUB (`rd.luks.uuid`) is not handled yet. Current walkthroughs:
 - https://davidalger.com/posts/fedora-asahi-remix-on-apple-silicon-with-luks-encryption/
 
 In the test container there is no real disk, so that check warns and continues.
+
+## DisplayLink
+
+`install_displaylink` sets up DisplayLink USB docks (vendor id `17e9`, e.g.
+the Wavlink USB 3 to HDMI dock). DisplayLink only ships Ubuntu packages, so
+the step downloads the arm64 `displaylink-driver` and `evdi` packages from
+Synaptics' APT repository (versions and SHA256 pinned at the top of
+`install_displaylink.sh`; downloading them means accepting DisplayLink's
+licence) and installs:
+
+- `evdi`, the kernel module, through DKMS, plus `kernel-16k-devel-matched`
+  so DKMS has headers for every new kernel. dkms only pulls in headers for
+  the 4K kernel by itself.
+- `DisplayLinkManager` (closed source) in `/usr/libexec/displaylink-driver`,
+  where SELinux labels it `bin_t` so systemd can run it.
+- `displaylink-driver.service`, started by `/etc/udev/rules.d/99-displaylink.rules`
+  when a dock is plugged in. The rule also makes the
+  `/dev/displaylink/by-id/…` link that DisplayLinkManager waits for.
+- `/usr/lib/systemd/system-sleep/una-displaylink` to suspend/resume it.
+
+Hyprland picks up the dock's monitor (`DVI-I-*`) without extra config.
+
+**Kernel updates.** evdi is built outside the kernel, so a new kernel can
+break it. After each kernel install, `/etc/kernel/install.d/99-una-evdi.install`
+checks that DKMS built evdi for it (retrying once). If not, it records the
+failure and, when `dnf` was run from a terminal, asks:
+
+- `k` keep booting the newest kernel where evdi works (`grubby --set-default`)
+- `n` boot the new kernel anyway
+- `s` decide later
+
+If nobody answered (e.g. an unattended update), Hyprland shows a
+notification at login, and `una displaylink` asks. The GRUB menu is hidden,
+so this is the practical way back to a working kernel. The next kernel whose
+evdi build succeeds becomes the default again as usual. If evdi keeps
+failing on new kernels, bump `EVDI_VERSION` in `install_displaylink.sh` and
+run `una apply`.
+
+`una displaylink` shows whether the driver, evdi, service, dock and monitor
+are OK. It also warns about the dock running at USB 2.0 speed (on this
+MacBook's USB-C ports that depends on which way up the plug is) and about
+Asahi USB-C PHY errors that drop the dock. `una displaylink logs` shows the
+service and kernel messages. DisplayLink's own logs in `/var/log/displaylink`
+are encrypted for their support team.
 
 ## Re-runs
 
@@ -99,10 +144,13 @@ scripts/
   install_packages.sh
   configure_hid_apple.sh
   configure_notch.sh
+  install_displaylink.sh      # DisplayLink driver + evdi (DKMS) + service/udev/hooks
+  displaylink_status.sh       # una displaylink
   restart_desktop_portals.sh  # restart user screen-share portals on every apply
 ansible/                        # Hyprland, zsh, and user packages
 configs/hypr/                   # Hyprland config to copy
 configs/una/                    # una CLI, start_panel launcher, wayle_rec module helper
+configs/displaylink/            # DisplayLink service, udev rule, kernel-install + sleep hooks, una-evdi-kernel
 configs/kitty/                  # kitty.conf + themes copied to ~/.config/kitty
 configs/fcitx5/                 # fcitx5 profile (gb-mac + hangul) copied to ~/.config/fcitx5
 configs/wofi/                   # wofi config + tokyo-night/light CSS copied to ~/.config/wofi
