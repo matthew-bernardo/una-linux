@@ -338,6 +338,30 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
+-- Sideways swipe on the Magic Mouse switches workspaces, like macOS. Only the
+-- Magic Mouse: the trackpad keeps horizontal scroll (and its 3/4-finger
+-- swipes). Hyprland names the mouse after its Bluetooth alias, or after the
+-- product when it is on the USB-C cable. One swipe sends a burst of scroll
+-- events, so switch once and ignore the rest of the burst.
+local magicMouseDevices = { "seo-hyon’s-magic-mouse", "apple-inc.-magic-mouse" }
+local swipeCooldownMs = 400
+local swipeCoolingDown = false
+local function swipeWorkspace(workspace)
+  return function()
+    if swipeCoolingDown then
+      return
+    end
+    swipeCoolingDown = true
+    hl.dispatch(hl.dsp.focus({ workspace = workspace }))
+    hl.timer(function()
+      swipeCoolingDown = false
+    end, { timeout = swipeCooldownMs, type = "oneshot" })
+  end
+end
+local magicMouseOnly = { device = { inclusive = true, list = magicMouseDevices } }
+hl.bind("mouse_right", swipeWorkspace("e+1"), magicMouseOnly)
+hl.bind("mouse_left", swipeWorkspace("e-1"), magicMouseOnly)
+
 -- 1:1 swipe between workspaces. Direction follows gestures.workspace_swipe_invert
 -- (default true, so the view follows the fingers, matching natural_scroll).
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
